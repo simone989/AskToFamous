@@ -19,5 +19,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
       url: '/register',
       templateUrl: 'partials/register.html',
       controller: 'registerController'
-    });
+    })
+    .state('profile', {
+       url: '/profile',
+       templateUrl: 'partials/profile.html',
+       controller: 'profileController'
+     });
 });

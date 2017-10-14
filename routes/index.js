@@ -52,7 +52,12 @@ router.post('/register', function(req, res, next){
         password: req.body.password,
         email: req.body.email,
         blocked: true,
-        admin: true
+        admin: true,
+        number: "None",
+        birth: "None",
+        address: "None",
+        gender: "None"
+
       });
 
       // save the sample user
@@ -136,12 +141,7 @@ router.get('/verify', function(req,res){
               console.log('Message sent: ' +info.response);
             };
           });
-
-
       });
-
-
-
   });
 
   res.writeHead(301,
@@ -232,7 +232,12 @@ router.post('/authenticate', function(req, res) {
         res.json({
           success: true,
           message: 'Enjoy your token!',
-          token: token
+          token: token,
+          number: user.number,
+          birth: user.birth,
+          address: user.address,
+          email: user.email,
+          gender: user.gender
         });
       }
 

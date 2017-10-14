@@ -1,7 +1,7 @@
 app.controller('homeController', function ($scope) {
 
   $(function() {
-    $('#commits').githubInfoWidget({ user: 'Helias', repo: 'AgentSim-Portal', branch: 'master', last: 10, limitMessageTo: 60 });
+    $('#commits').githubInfoWidget({ user: 'simone989', repo: 'AskToFamous', branch: 'master', last: 5, limitMessageTo: 60 });
   });
 
 });
@@ -24,7 +24,7 @@ app.controller('loginController', function ($scope, $rootScope, $state, $http, $
     }).then(
       function(res) {
         if (res.data.success) {
-          $localStorage.user = { token : res.data.token, name : $scope.username };
+          $localStorage.user = { token : res.data.token, name : $scope.username, number: res.data.number, birth: res.data.birth , address: res.data.address, email: res.data.email, gender: res.data.gender };
           $rootScope.user = $localStorage.user;
           $state.go("home");
           Notification.success("Logged successfully");
@@ -72,3 +72,12 @@ app.controller('registerController', function ($scope, $http, $state, Notificati
   };
 
 });
+
+
+app.controller('profileController',function($scope,$http, $state, Notification){
+  $scope.alertMessage = "";
+  $scope.name = "test";
+
+
+
+})
