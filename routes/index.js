@@ -10,6 +10,92 @@ router.get('/', function(req, res) {
   //res.render('index', { title: 'Expresssss' });
 });
 
+
+router.post('/editUser', function(req, res, next){
+  console.log(req.body.name+" "+req.body.address +"  "+req.body.gender+"  "+req.body.number);
+  if(!req.body.name || !req.body.address || !req.body.gender || !req.body.number)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res, next){
+    User.find({name: req.body.name}, function(err, users){
+      if(err)
+        throw(err);
+      if(!(users[0])){
+        return res.json({
+          success: false,
+          message: "This username not exist"
+        });
+      }
+      else{
+        next();
+      }
+    });
+  },function(req, res, next){
+    User.update({"name": req.body.name}, {"$set": {"address": req.body.address, "gender": req.body.gender, "number": req.body.number}}, function(err, nick){
+      if(err)
+        throw(err);
+        return res.json({
+          success: true,
+          message: "All data as change"
+        })
+
+    });
+});
+
+router.post('/editPassword', function(req, res, next){
+  console.log(req.body.name+" "+req.body.oldPassword +"  "+req.body.newPassword);
+  if(!req.body.name || !req.body.oldPassword || !req.body.newPassword)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res, next){
+    User.find({name: req.body.name}, function(err, users){
+      if(err)
+        throw(err);
+      if(!(users[0])){
+        return res.json({
+          success: false,
+          message: "This username not exist"
+        });
+      }
+      else{
+        next();
+      }
+    });
+  },function(req,res, next){
+      User.find({name: req.body.name}, function(err, users){
+        if(err)
+          throw(err);
+        if(users[0].password != req.body.oldPassword){
+          return res.json({
+            success: false,
+            message: "Old Password is not corrent."
+          });
+        }
+        else{
+          next();
+        }
+      });
+    },function(req, res, next){
+    User.update({"name": req.body.name}, {"$set": {"password": req.body.newPassword}}, function(err, nick){
+      if(err)
+        throw(err);
+        return res.json({
+          success: true,
+          message: "Password Change"
+        })
+
+    });
+});
+
+
 router.post('/register', function(req, res, next){
   console.log(req.body.name +"  "+req.body.password+"  "+req.body.email);
   if(!req.body.name || !req.body.password || !req.body.email)
