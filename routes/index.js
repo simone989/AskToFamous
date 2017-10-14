@@ -95,6 +95,106 @@ router.post('/editPassword', function(req, res, next){
     });
 });
 
+router.post('/register', function(req, res, next){
+  console.log(req.body.name +"  "+req.body.password+"  "+req.body.email);
+  if(!req.body.name || !req.body.password || !req.body.email)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res, next){
+    User.find({email: req.body.email}, function(err, users){
+      if(err)
+        throw(err);
+      if(users[0]){
+        return res.json({
+          success: false,
+          message: "this email is already registered"
+        });
+      }
+      else{
+        next();
+      }
+    });
+  },function(req, res, next){
+        User.find({name: req.body.name}, function(err, users) {
+          if(err)
+            throw(err);
+          if(users[0])
+            return res.json({
+              success: false,
+              message: "This username already exist."
+            });
+          else{
+            next();
+          }
+        });
+    },function(req, res, next){
+      var nick = new User({
+        name: req.body.name,
+        password: req.body.password,
+        email: req.body.email,
+        blocked: true,
+        admin: true,
+        number: "None",
+        address: "None",
+        gender: "None",
+        creator: req.body.creator ? true : false,
+        platform: "None"
+
+      });
+
+      // save the sample user
+      nick.save(function(err) {
+        if (err) throw err;
+        res.json({
+          success: true,
+          message: "User registered successfully!"
+        })
+        console.log('User saved successfully');
+      });
+
+      var id = nick._id;
+
+
+      var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: config.email,
+          pass: config.password
+        }
+      });
+
+      var verify = config.home_path+ '/verify?token=' +id;
+      var mailOptions = {
+        from: config.email,
+        to: nick.email,
+        subject: 'Verify your Ask to Famous',
+        text: verify
+      };
+
+      transporter.sendMail(mailOptions, function(err, info){
+        if(err){
+          console.log("Invalid Email.");
+          res.json({
+            success: false,
+            message: "Invalid Email."
+          })
+        }
+        else {
+          console.log('Message sent: ' +info.response);
+          res.json({
+            success: true,
+            message: "Email di conferma inviata con successo!"
+          });
+        };
+      });
+
+    }
+);
+
 
 router.post('/register', function(req, res, next){
   console.log(req.body.name +"  "+req.body.password+"  "+req.body.email);
@@ -140,7 +240,6 @@ router.post('/register', function(req, res, next){
         blocked: true,
         admin: true,
         number: "None",
-        birth: "None",
         address: "None",
         gender: "None"
 
@@ -225,6 +324,7 @@ router.get('/verify', function(req,res){
             }
             else {
               console.log('Message sent: ' +info.response);
+              res.send("ok")
             };
           });
       });
@@ -275,7 +375,6 @@ router.get('/data',function(req,res){
 
 router.post('/authenticate', function(req, res) {
 
-  // find the user
   console.log(req.body.name);
   User.findOne({
     "name": req.body.name
@@ -320,7 +419,6 @@ router.post('/authenticate', function(req, res) {
           message: 'Enjoy your token!',
           token: token,
           number: user.number,
-          birth: user.birth,
           address: user.address,
           email: user.email,
           gender: user.gender

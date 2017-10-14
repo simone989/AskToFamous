@@ -10,6 +10,7 @@ module.exports = mongoose.model('User', new Schema({
 	gender: String,
 	admin: Boolean,
 	number: String,
-	birth: String,
-	address: String
+	address: String,
+	creator: Boolean,
+	platform: String
 }));

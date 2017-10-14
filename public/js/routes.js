@@ -24,5 +24,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
        url: '/profile',
        templateUrl: 'partials/profile.html',
        controller: 'profileController'
-     });
+     })
+   .state('registerCreator', {
+      url: '/registerCreator',
+      templateUrl: 'partials/registerCreator.html',
+      controller: 'registerCreator'
+    });
 });
