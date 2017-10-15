@@ -229,16 +229,17 @@ router.get('/verify', function(req,res){
             }
             else {
               console.log('Message sent: ' +info.response);
-              res.send("ok")
+              res.writeHead(301,
+                {Location: config.home_path+'/#!/login'},
+                "User verified."
+              );
+              res.end();
             };
           });
       });
   });
 
-  res.writeHead(301,
-    {Location: config.home_path+'/#!/login'},
-    "User verified."
-  );
+
 
 });
 
