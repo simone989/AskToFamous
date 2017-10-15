@@ -53,14 +53,19 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li><a href="#!/scripts">Scripts</a></li>
-            <li ng-show="!(user.name == null || user.name == '')"><a href="#!/my_scripts">My Scripts</a></li>
+            <li><a href="#!/scripts">All questions</a></li>
+            <li ng-show="!(user.name == null || user.name == '' || user.creator == false)"><a href="#!/my_scripts">My Questions</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
               <form class="navbar-form">
-                <div ng-show="(user != '' && user != null && user.token != '')" class="form-group">
+                <div ng-show="(user != '' && user != null && user.token != '' && user.creator != true )" class="form-group">
                   <b class="text-primary"><i class="glyphicon glyphicon-user"></i><a href="#!/profile"> {{ user.name }}</a> </b>
+                  &nbsp;&nbsp;&nbsp;
+                  <button class="btn btn-primary" ng-click="logout()"><i class="glyphicon glyphicon-log-out"></i></button>
+                </div>
+                <div ng-show="(user != '' && user != null && user.token != '' && user.creator != false )" class="form-group">
+                  <b class="text-primary"><i class="glyphicon glyphicon-user"></i><a href="#!/profileCreator"> {{ user.name }}</a> </b>
                   &nbsp;&nbsp;&nbsp;
                   <button class="btn btn-primary" ng-click="logout()"><i class="glyphicon glyphicon-log-out"></i></button>
                 </div>

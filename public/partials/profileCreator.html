@@ -1,0 +1,97 @@
+<div class="container">
+      <div class="row">
+      <div class="col-md-5  toppad  pull-right col-md-offset-3 ">
+      </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
+
+
+          <div class="panel panel-info " ng-show="!(user.name == null || user.name == '')">
+            <div class="panel-heading header-panel">
+              <h3 class="panel-title">Profile</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+
+
+                <div class="col-md-3 col-lg-3 " align="center">
+                  <div ng-show="(user.profileImage == 'None')">
+                   <img alt="User Pic"  src="../images/profile-pictures.png" class="img-circle img-responsive">
+                 </div>
+                 <div ng-show="(user.profileImage != 'None')">
+                   <img alt="User Pic"  src="../images/profile/{{ user.profileImage }}" class="img-circle img-responsive">
+                 </div>
+                  <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
+                    accept="image/*" ngf-max-height="1000" ngf-max-size="1MB"> Select Image</button>
+                </div>
+                <div class=" col-md-9 col-lg-9 ">
+                  <form class="form-signin" ng-submit="editUser()" >
+                  <table class="table table-user-information">
+
+
+                      <tr>
+                        <td>Username</td>
+                        <td>{{ user.name }}</td>
+                      </tr>
+                      <tr>
+                        <td>Email</td>
+                        <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                      </tr>
+                      <tr>
+                        <td>Gender</td>
+                        <td>
+                          <select id="genderS" ng-model= "gender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Home Address</td>
+                        <td><input id="addressS" type="text" ng-model="address" class="form-control"  placeholder="{{ user.address }}" ></td>
+                      </tr>
+                      <tr>
+                        <td>Platform</td>
+                        <td><input id="platformS" type="text" ng-model="platform" class="form-control"  placeholder="{{ user.platform }}" ></td>
+                      </tr>
+                      <tr>
+                        <td>Phone Number</td>
+                        <td><input id="numberS" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' ng-model="number" class="form-control" value="test" placeholder="{{ user.number }}" ></td>
+
+                      </tr>
+                      <tr>
+                        <td><button class="btn btn-lg btn-primary btn-block" type="submit"> Edit Profile</button></td>
+                      </tr>
+                    </table>
+                    </form>
+                    <form class="form-signin" ng-submit="editPassword()" >
+                    <table class="table table-user-information">
+
+
+                      <tr>
+                        <td>Old Password</td>
+                        <td><input type="password" ng-model="oldPassword" class="form-control" ></td>
+                      </tr>
+                      <tr>
+                        <td>New Password</td>
+                        <td><input type="password" ng-model="newPassword" class="form-control" ></td>
+                      </tr>
+                      <tr>
+                        <td>Reply New Password</td>
+                        <td><input type="password" ng-model="replyNewPassword" class="form-control" ></td>
+                      </tr>
+                      <tr>
+                        <td><button class="btn btn-lg btn-primary btn-block" type="submit"> Edit Password</button></td>
+                      </tr>
+
+                      </table>
+                      </form>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>

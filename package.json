@@ -11,12 +11,14 @@
     "debug": "~0.7.4",
     "ejs": "^2.5.7",
     "express": "~4.0.0",
+    "express-fileupload": "^0.3.0",
     "jade": "~1.3.0",
     "jsonwebtoken": "^7.4.0",
     "mongod": "^2.0.0",
     "mongoose": "^4.12.1",
     "monk": "^6.0.5",
     "morgan": "~1.0.0",
+    "ng-file-upload": "^12.2.13",
     "nodemailer": "^4.1.3",
     "static-favicon": "~1.0.0"
   }
