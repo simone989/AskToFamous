@@ -9,11 +9,10 @@
           <i ng-show= " (platformCreator == 'youtube')" class= "fa fa-youtube-play" />
           {{ nameCreator }}
         </h2>
-
+        <div ng-show= "(user.name != nameCreator)">
           <button ng-show= "(user != '' && user != null && user.token != '' )" class="btn btn-lg btn-primary btn-block" ng-click=changePage(this)>Add new question </button>
           <button ng-show= "!(user != '' && user != null && user.token != '' )" class="btn btn-lg btn-primary btn-block" disabled> Sign in for add new question </button>
-
-
+        </div>
     </div>
   </div>
 </div>

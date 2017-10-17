@@ -15,7 +15,6 @@ app.controller('questionPageController',function($scope, $rootScope, $state, $st
   })
 
   $scope.changePage = function(thisObje){
-    console.log(thisObje)
     $state.go('createQuestion',{name: thisObje.nameCreator,})
 
   }

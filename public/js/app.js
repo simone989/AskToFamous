@@ -18,4 +18,8 @@ app.run(function($rootScope, $localStorage, $state, Notification){
     $state.go("login");
   };
 
+  $rootScope.myQuestion = function(){
+    $state.go('questionPage',{name: $rootScope.user.name, image: $rootScope.user.profileImage, platform: $rootScope.user.platform})
+  }
+
 });
