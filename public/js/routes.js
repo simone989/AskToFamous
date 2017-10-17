@@ -54,5 +54,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
         url: '/find',
         templateUrl: '/partials/find.html',
         controller: 'findController'
+      })
+      .state('createQuestion',{
+        url: '/createQuestion',
+        templateUrl: '/partials/createQuestion.html',
+        controller: 'createQuestionController',
+        params:{
+          name: ""
+        }
       });
 });

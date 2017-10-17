@@ -7,17 +7,30 @@ app.controller('homeController', function ($scope) {
 });
 
 
-app.controller('questionPageController',function($scope, $rootScope, $state,$stateParams, $http, $localStorage, Notification){
+app.controller('questionPageController',function($scope, $rootScope, $state, $stateParams, $http, $localStorage, Notification){
   $(function(){
     $scope.nameCreator = $stateParams.name
     $scope.imageCreator = $stateParams.image
     $scope.platformCreator = $stateParams.platform
   })
 
+  $scope.changePage = function(thisObje){
+    console.log(thisObje)
+    $state.go('createQuestion',{name: thisObje.nameCreator,})
+
+  }
+
 });
 
 app.controller('allQuestionController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
 
+});
+
+app.controller('createQuestionController',function($scope, $rootScope, $stateParams, $state, $http, $localStorage, Notification){
+  $(function(){
+    $scope.nameCreator = $stateParams.name
+    $scope.user = $rootScope.user
+  })
 });
 app.controller('findController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
 
