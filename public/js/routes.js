@@ -33,6 +33,26 @@ app.config(function($stateProvider, $urlRouterProvider) {
      .state('registerCreator', {
         url: '/registerCreator',
         templateUrl: 'partials/registerCreator.html',
-        controller: 'registerCreator'
+        controller: 'registerCreatorController'
+      })
+      .state('questionPage',{
+        url: '/questionPage',
+        templateUrl: '/partials/questionPage.html',
+        controller: 'questionPageController',
+        params: {
+          name: "",
+          image: "",
+          platform: ""
+        }
+      })
+      .state('allQuestion',{
+        url: '/allQuestion',
+        templateUrl: '/partials/allQuestion.html',
+        controller: 'allQuestionController'
+      })
+      .state('find',{
+        url: '/find',
+        templateUrl: '/partials/find.html',
+        controller: 'findController'
       });
 });

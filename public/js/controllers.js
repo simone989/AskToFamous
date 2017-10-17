@@ -6,6 +6,59 @@ app.controller('homeController', function ($scope) {
 
 });
 
+
+app.controller('questionPageController',function($scope, $rootScope, $state,$stateParams, $http, $localStorage, Notification){
+  $(function(){
+    $scope.nameCreator = $stateParams.name
+    $scope.imageCreator = $stateParams.image
+    $scope.platformCreator = $stateParams.platform
+  })
+
+});
+
+app.controller('allQuestionController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
+
+});
+app.controller('findController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
+
+
+  $scope.changePage = function(thisObje){
+    $state.go('questionPage',{name: thisObje.creator.name, image: thisObje.creator.image, platform: thisObje.creator.platform})
+  }
+
+  $scope.changeName = function(){
+    if ($scope.nameFind == "")
+      return
+    $http({
+      method: 'POST',
+      url: path + "listUser",
+      data: $.param({ nameFind: $scope.nameFind }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          $('#ContainerLi').empty()
+          $scope.AllCreator = res.data.data
+          /*
+          for (name in res.data.data){
+            //var pLink = $("<div class='pFind' ng-click=\"changePage('"+res.data.data[name]+"')\"></div>").text(res.data.data[name]);
+            var pLink= "<button class='pFind' ng-click= changePage('"+res.data.data[name]+"')><a >"+res.data.data[name]+"</a></button>"
+            $('#Container').append(pLink,"<br>")
+          }
+          */
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+  }
+
+
+});
+
 app.controller('loginController', function ($scope, $rootScope, $state, $http, $localStorage, Notification) {
 
   // check if user is already logged
@@ -74,7 +127,7 @@ app.controller('registerController', function ($scope, $http, $state, Notificati
 });
 
 
-app.controller('registerCreator', function ($scope, $http, $state, Notification) {
+app.controller('registerCreatorController', function ($scope, $http, $state, Notification) {
 
   $scope.alertMessage = "";
 

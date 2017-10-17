@@ -53,8 +53,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li><a href="#!/scripts">All questions</a></li>
-            <li ng-show="!(user.name == null || user.name == '' || user.creator == false)"><a href="#!/my_scripts">My Questions</a></li>
+            <li><a href="#!/allQuestion">All questions</a></li>
+            <li><a href="#!/find">Find Creator</a></li>
+            <li ng-show="!(user.name == null || user.name == '' || user.creator == false)"><a href="#!/questionPage">My Questions</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>

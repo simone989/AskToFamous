@@ -1,0 +1,13 @@
+<div class="container-fluid" ng-init="creator=[]">
+  <div class="row">
+    <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8 text-center">
+        <h2 class="form-signin-heading">
+          <img alt="Creator Pic" ng-show= "(imageCreator != 'None')" src="../images/profile/{{ imageCreator }}" />
+          <img alt="Creator Pic" ng-show= "(imageCreator == 'None')" src="../images/profile-pictures.png" />
+          {{ nameCreator }}
+        </h2>
+
+
+    </div>
+  </div>
+</div>

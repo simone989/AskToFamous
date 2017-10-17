@@ -377,31 +377,38 @@ router.post('/upload',function(req,res,next){
 
   })
 
-/*
-router.post('/upload',function(req,res, next){
+router.post('/listUser',function(req,res,next){
+  if(!req.body.nameFind)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  let resultData = []
+  User.find({"creator": true},function(err,user){
+    if(err)
+      throw(err);
+    for (Creator in user){
+      //console.log(user[Creator].name)
+      if (user[Creator].name.includes(req.body.nameFind)){
+        var send= {name: user[Creator].name, image: user[Creator].profileImage, platform: user[Creator].platform}
+        resultData.push(send)
+      }
+      else {
+        console.log("non contiene")
+      }
 
-  if(req.files){
-    var randomString = Math.random().toString(36).substring(7)+'.'+req.files.file['name'].split('.')[1]
-    req.files.file.mv('./public/images/profile/'+randomString)
-    if( req.files.oldPhoto == "None"){
-      User.update({"name": req.body.name}, {"$set": {"password": req.body.newPassword}}, function(err, nick){
-        if(err)
-          throw(err);
-          return res.json({
-            success: true,
-            message: "Password Change"
-          })
-
-      });
     }
-    //req.files.sampleFile.name = req.files.sampleFile.name
-    //console.log(req.files[0].name)
+    res.json({
+      success: true,
+      message: "Found element",
+      data: resultData
+    })
+  })
 
-  }
-  res.send("ok")
 });
-
-*/
 
 
 module.exports = router;
