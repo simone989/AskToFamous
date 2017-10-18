@@ -1,7 +1,34 @@
-app.controller('homeController', function ($scope) {
+app.controller('homeController', function ($scope, $rootScope,$http, $localStorage, Notification) {
 
   $(function() {
     $('#commits').githubInfoWidget({ user: 'simone989', repo: 'AskToFamous', branch: 'master', last: 5, limitMessageTo: 60 });
+
+    $http({
+      method: 'POST',
+      url: path + "getBalance",
+      data: $.param({ name: $rootScope.user.name, token: $rootScope.user.token }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          if ($localStorage.user.balance !== res.data.balance){
+            $localStorage.user.balance = res.data.balance
+          }
+
+        }
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
   });
 
 });
@@ -32,12 +59,45 @@ app.controller('questionPageController',function($scope, $rootScope, $state, $st
       }
     );
 
-    $scope.test = function(thisObje){
-      console.log(thisObje)
-    }
-
-
   })
+
+  $scope.replyQuestion = function(thisObje,replyModel){
+    if(!(replyModel)){
+      Notification.error("Please set all fields");
+      return
+    }
+    console.log($rootScope)
+    console.log($scope.reply)
+
+    $http({
+      method: 'POST',
+      url: path + "sendReply",
+      data: $.param({ token: $rootScope.user.token, "text": replyModel, name: thisObje.question.creatorData.name, idQuestion: thisObje.question._id }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          Notification.success(res.data.message)
+          Notification.success("Congratu hai aumentato il tuo bilancio.")
+          //$route.reload();
+          $state.go('home')
+          //$state.go('questionPage',{name: $scope.nameCreator, image: $scope.imageCreator, platform: $scope.platformCreator })
+        }
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+
+  }
 
   $scope.changePage = function(thisObje){
     $state.go('createQuestion',{name: thisObje.nameCreator,image: thisObje.imageCreator, platform: thisObje.platformCreator})
@@ -67,6 +127,11 @@ app.controller('allQuestionController',function($scope, $rootScope, $state, $htt
       }
     );
   });
+
+  $scope.changePage = function(thisObje){
+    console.log(this)
+    $state.go('questionPage',{name: thisObje.question.creatorData.name, image: thisObje.question.creatorData.image, platform: thisObje.question.creatorData.platform })
+  }
 });
 
 app.controller('createQuestionController',function($scope, $rootScope, $stateParams, $state, $http, $localStorage, Notification){
@@ -82,9 +147,7 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
       Notification.error("Please set all fields");
       return
     }
-    if(!$scope.nameCreator){
-      $state.go("home")
-    }
+
 
     $http({
       method: 'POST',
@@ -94,11 +157,13 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
     }).then(
       function(res) {
         if (res.data.success) {
-          Notification.success(res.data.message)
-          $state.go('questionPage',{name: $scope.nameCreator, image: $scope.imageCreator, platform: $scope.platformCreator })
+            Notification.success(res.data.message)
+            $state.go('questionPage',{name: $scope.nameCreator, image:$scope.imageCreator , platform: $scope.platformCreator })
         }
         else
-          Notification.error(res.data.message);
+        {
+            Notification.error(res.data.message);
+        }
       },
       function(err) {
         Notification.error("Error!");
@@ -161,7 +226,7 @@ app.controller('loginController', function ($scope, $rootScope, $state, $http, $
     }).then(
       function(res) {
         if (res.data.success) {
-          $localStorage.user = { token : res.data.token, name : $scope.username, number: res.data.number,  address: res.data.address, email: res.data.email, gender: res.data.gender, creator: res.data.creator, id: res.data.id, platform: res.data.platform, profileImage: res.data.profileImage };
+          $localStorage.user = { token : res.data.token, name : $scope.username, number: res.data.number,  address: res.data.address, email: res.data.email, gender: res.data.gender, creator: res.data.creator, id: res.data.id, platform: res.data.platform, profileImage: res.data.profileImage, balance: res.data.balance };
           $rootScope.user = $localStorage.user;
           $state.go("home");
           Notification.success("Logged successfully");

@@ -10,5 +10,7 @@ module.exports = mongoose.model('Question', new Schema({
   date: String,
   author: String,
 	tag: [String],
-	creatorData: {name: String, image: String, platform: String}
+	creatorData: {name: String, image: String, platform: String},
+	reply: String,
+	dateReply: String
 }));

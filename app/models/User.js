@@ -13,5 +13,6 @@ module.exports = mongoose.model('User', new Schema({
 	address: String,
 	creator: Boolean,
 	platform: String,
-	profileImage: String
+	profileImage: String,
+	balance: Number
 }));

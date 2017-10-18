@@ -145,7 +145,8 @@ router.post('/register', function(req, res, next){
         gender: "None",
         creator: req.body.creator ? true : false,
         platform: "None",
-        profileImage: "None"
+        profileImage: "None",
+        balance: 0.0,
 
       });
 
@@ -299,7 +300,8 @@ router.post('/authenticate', function(req, res) {
           creator: user.creator,
           id: user._id,
           platform: user.platform,
-          profileImage: user.profileImage
+          profileImage: user.profileImage,
+          balance: user.balance
         });
       }
 
@@ -455,7 +457,9 @@ router.post('/sendQuestion',function(req,res,next){
     date: new Date().toLocaleString(),
     author: req.body.user,
     tag: req.body.tag,
-    creatorData: {name: req.body.name, image: req.body.image, platform: req.body.platform}
+    creatorData: {name: req.body.name, image: req.body.image, platform: req.body.platform},
+    reply: "None",
+    dateReply: "None"
   });
 
   question.save(function(err) {
@@ -501,6 +505,120 @@ router.post('/listAllQuestion', function(req,res){
       })
   })
 });
+
+router.post('/sendReply',function(req,res,next){
+  if(!req.body.token || !req.body.text || !req.body.name  || ! req.body.idQuestion )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({ success: false, message: 'Failed to authenticate token.' });
+    } else {
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
+
+},function(req,res,next){
+  Question.find({"_id": req.body.idQuestion, "creator": req.body.name  },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "Error Authentication."
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res,next){
+  Question.update({"_id": req.body.idQuestion}, {"$set": {"reply": req.body.text, "dataReply": new Date().toLocaleString() } }, function(err,update){
+    if(err)
+      throw(err);
+      console.log(update)
+       res.json({
+        success: true,
+        message: "You Reply as be send."
+      })
+
+  });
+  User.update({"creator": true, "name":req.body.name},{"$inc": {"balance": 1.0}  },function(err,user){
+    if(err)
+      throw(err);
+      console.log(user)
+  })
+
+});
+
+
+router.post('/getBalance',function(req,res,next){
+  if(!req.body.token ||  !req.body.name  )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
+
+},function(req,res,next){
+  User.findOne({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+      res.json({
+        success: true,
+        message: "ok",
+        balance: user.balance
+      });
+  })
+
+});
+
 
 
 

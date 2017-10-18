@@ -16,13 +16,27 @@
         <h2>List All Question: </h2>
         <div class="Question" ng-repeat="question in allQuestion">
           <h3 class="form-signin-heading" style="text-align: left">{{ question.title }}</h3>
+          <span style="text-align: right">{{ question.author }}: {{ question.date }}</span>
           <textarea class="form-control" cols="50" rows="8" readonly>{{ question.text }}</textarea>
+          <br>
+
+          <div ng-show="(question.reply != 'None')">
+            <span>Reply Creator</span>
+            <textarea class="form-control" cols="50" rows="4" readonly>{{ question.reply }}</textarea>
+          </div>
+
+          <div ng-show="(user.name == question.creator && question.reply == 'None')">
+            <form class="form-signin" ng-submit="replyQuestion(this, replyModel)" >
+              <textarea ng-model="replyModel" class="form-control" placeholder="What do you want to ask?" cols="50" rows="4" maxlength="260"required/>
+              <button class="btn btn-lg btn-primary btn-block" type="submit">Reply To Question</button>
+            </form>
             <span>Tag: </span>
-            <div class= "tagDiv" style="display: inline-block">
-              <span  ng-repeat= "tagDB in question.tag">#{{tagDB}}  </span>
-            </div>
-          <button  class="btn btn-lg btn-primary"  ng-click="test(this)"ng-show="(question.commentFlag == true)" >Comment<i class="fa fa-comment" /></button>
-        </diV>
-    </div>
+
+          </div>
+          <div class= "tagDiv" style="display: inline-block">
+            <span  ng-repeat= "tagDB in question.tag">#{{tagDB}}</span>
+
+          <button  class="btn btn-lg btn-primary"  ng-click="" ng-show="(question.commentFlag == true)" >Comment<i class="fa fa-comment" /></button>
+          </div>
   </div>
 </div>
