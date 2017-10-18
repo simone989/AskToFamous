@@ -4,11 +4,14 @@
         <h2 class="form-signin-heading"><i class="glyphicon glyphicon-user"></i> Search Creator</h2>
         <h4 class="pull-left">&nbsp; Name Creator:</h4>
         <input type="text" ng-model="nameFind" ng-change="changeName()" class="form-control" placeholder="Username" autofocus>
+      <br>
+
 
     <div id="Container">
-      <li id="ContainerLi" ng-repeat="creator in AllCreator"  >
-        <div class='pFind' ng-click=changePage(this)>{{ creator.name }}</div>
-      </li>
+      
+      <p id="ContainerLi" ng-repeat="creator in AllCreator"  >
+        <button class='btn btn-lg btn-primary btn-block' ng-click=changePage(this)>{{ creator.name }}</button>
+      </p>
     </div>
 
     </div>

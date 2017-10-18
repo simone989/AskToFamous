@@ -56,7 +56,7 @@
           <ul class="nav navbar-nav">
             <li><a href="#!/allQuestion">All questions</a></li>
             <li><a href="#!/find">Search Creator</a></li>
-            <li ng-show="!(user.name == null || user.name == '' || user.creator == false)"><a ng-click="myQuestion()" href="#!/questionPage">My Questions</a></li>
+            <li ng-show="!(user.name == null || user.name == '' || user.creator == false)"><a ng-click="myQuestion()" href="">My Questions</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
@@ -80,6 +80,8 @@
     </nav>
 
     <div ui-view></div>
-
+    <footer class="text-center">
+      Coded By <a href="https://github.com/simone989">Simone Di mauro</a>
+    </footer>
   </body>
 </html>

@@ -12,24 +12,101 @@ app.controller('questionPageController',function($scope, $rootScope, $state, $st
     $scope.nameCreator = $stateParams.name
     $scope.imageCreator = $stateParams.image
     $scope.platformCreator = $stateParams.platform
+    $http({
+      method: 'POST',
+      url: path + "listQuestion",
+      data: $.param({ name: $scope.nameCreator  }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          $scope.allQuestion = res.data.data
+          console.log(res.data.data)
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+    $scope.test = function(thisObje){
+      console.log(thisObje)
+    }
+
+
   })
 
   $scope.changePage = function(thisObje){
-    $state.go('createQuestion',{name: thisObje.nameCreator,})
-
+    $state.go('createQuestion',{name: thisObje.nameCreator,image: thisObje.imageCreator, platform: thisObje.platformCreator})
   }
 
 });
 
 app.controller('allQuestionController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
 
+  $(function(){
+    $http({
+      method: 'POST',
+      url: path + "listAllQuestion",
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          $scope.allQuestion = res.data.data
+          console.log(res.data.data)
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+  });
 });
 
 app.controller('createQuestionController',function($scope, $rootScope, $stateParams, $state, $http, $localStorage, Notification){
   $(function(){
     $scope.nameCreator = $stateParams.name
+    $scope.imageCreator = $stateParams.image
+    $scope.platformCreator = $stateParams.platform
     $scope.user = $rootScope.user
   })
+
+  $scope.sendQuestion= function(){
+    if(!($scope.title && $scope.text && $scope.tag && $('input[name=commentR]:checked').val())){
+      Notification.error("Please set all fields");
+      return
+    }
+    if(!$scope.nameCreator){
+      $state.go("home")
+    }
+
+    $http({
+      method: 'POST',
+      url: path + "sendQuestion",
+      data: $.param({ name: $scope.nameCreator, user: $rootScope.user.name, title: $scope.title, text: $scope.text, tag: $scope.tag.split("#"), comment: $('input[name=commentR]:checked').val(), image: $scope.imageCreator, platform: $scope.platformCreator }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          Notification.success(res.data.message)
+          $state.go('questionPage',{name: $scope.nameCreator, image: $scope.imageCreator, platform: $scope.platformCreator })
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+
+  }
 });
 app.controller('findController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
 
@@ -39,8 +116,10 @@ app.controller('findController',function($scope, $rootScope, $state, $http, $loc
   }
 
   $scope.changeName = function(){
-    if ($scope.nameFind == "")
-      return
+    if ($scope.nameFind == ""){
+        $scope.AllCreator = []
+        return
+    }
     $http({
       method: 'POST',
       url: path + "listUser",
@@ -51,13 +130,6 @@ app.controller('findController',function($scope, $rootScope, $state, $http, $loc
         if (res.data.success) {
           $('#ContainerLi').empty()
           $scope.AllCreator = res.data.data
-          /*
-          for (name in res.data.data){
-            //var pLink = $("<div class='pFind' ng-click=\"changePage('"+res.data.data[name]+"')\"></div>").text(res.data.data[name]);
-            var pLink= "<button class='pFind' ng-click= changePage('"+res.data.data[name]+"')><a >"+res.data.data[name]+"</a></button>"
-            $('#Container').append(pLink,"<br>")
-          }
-          */
         }
         else
           Notification.error(res.data.message);

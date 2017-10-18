@@ -1,0 +1,17 @@
+<div class="container-fluid" ng-init="creator=[]">
+  <div class="row">
+    <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8 text-center">
+        <h2>List All Question: </h2>
+        <div class="Question" ng-repeat="question in allQuestion">
+          <span class="form-signin-heading" style="font-size: 250%">{{ question.title }} to {{ question.creator}}</span>
+          <span style="text-align: right">{{ question.author }}: {{ question.date }}</span>
+          <textarea class="form-control" cols="50" rows="8" readonly>{{ question.text }}</textarea>
+            <span>Tag: </span>
+            <div class= "tagDiv" style="display: inline-block">
+              <span  ng-repeat= "tagDB in question.tag">#{{tagDB}}  </span>
+            </div>
+          <button  class="btn btn-lg btn-primary"  ng-click="test(this)"ng-show="(question.commentFlag == true)" >Comment<i class="fa fa-comment" /></button>
+        </diV>
+    </div>
+  </div>
+</div>

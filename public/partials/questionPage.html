@@ -13,6 +13,16 @@
           <button ng-show= "(user != '' && user != null && user.token != '' )" class="btn btn-lg btn-primary btn-block" ng-click=changePage(this)>Add new question </button>
           <button ng-show= "!(user != '' && user != null && user.token != '' )" class="btn btn-lg btn-primary btn-block" disabled> Sign in for add new question </button>
         </div>
+        <h2>List All Question: </h2>
+        <div class="Question" ng-repeat="question in allQuestion">
+          <h3 class="form-signin-heading" style="text-align: left">{{ question.title }}</h3>
+          <textarea class="form-control" cols="50" rows="8" readonly>{{ question.text }}</textarea>
+            <span>Tag: </span>
+            <div class= "tagDiv" style="display: inline-block">
+              <span  ng-repeat= "tagDB in question.tag">#{{tagDB}}  </span>
+            </div>
+          <button  class="btn btn-lg btn-primary"  ng-click="test(this)"ng-show="(question.commentFlag == true)" >Comment<i class="fa fa-comment" /></button>
+        </diV>
     </div>
   </div>
 </div>

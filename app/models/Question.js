@@ -8,5 +8,7 @@ module.exports = mongoose.model('Question', new Schema({
   creator: String,
   commentFlag: Boolean,
   date: String,
-  author: String
+  author: String,
+	tag: [String],
+	creatorData: {name: String, image: String, platform: String}
 }));

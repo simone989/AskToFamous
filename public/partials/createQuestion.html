@@ -4,6 +4,18 @@
         <h2 class="form-signin-heading">
           What do you want to ask {{ nameCreator }} ?
         </h2>
+        <form class="form-signin" ng-submit="sendQuestion()" >
+          <h2 class="form-signin-heading"><i class="glyphicon glyphicon-user"></i> Login</h2>
+          <input type="text" ng-model="title" class="form-control" placeholder="Title" required autofocus>
+          <textarea ng-model="text" class="form-control" placeholder="What do you want to ask?" cols="50" rows="8" maxlength="260"required/>
+          <input type="text" ng-model="tag" class="form-control" placeholder="Tag question" required>
+          <lable>Do you want to enable comments?</label>
+          <label class="radio-inline"><input type="radio" name="commentR" value="true">Yes</label>
+          <label class="radio-inline"><input type="radio" name="commentR" value="false">No</label>
+          <br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Send Question</button>
+        </form>
+
     </div>
   </div>
 </div>

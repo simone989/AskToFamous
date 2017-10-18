@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User   = require('../app/models/User'); // get our mongoose models
+var Question   = require('../app/models/Question'); // get our mongoose models
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 var nodemailer  = require('nodemailer');
@@ -396,9 +397,7 @@ router.post('/listUser',function(req,res,next){
         var send= {name: user[Creator].name, image: user[Creator].profileImage, platform: user[Creator].platform}
         resultData.push(send)
       }
-      else {
-        console.log("non contiene")
-      }
+
 
     }
     res.json({
@@ -409,6 +408,101 @@ router.post('/listUser',function(req,res,next){
   })
 
 });
+
+
+router.post('/sendQuestion',function(req,res,next){
+  if(!req.body.name || !req.body.user || !req.body.title || !req.body.text || !req.body.tag || !req.body.comment  )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+
+},function(req,res,next){
+  User.find({"name":req.body.user },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No User Found"
+      });
+    }else {
+      next();
+    }
+  })
+}, function(req,res,next){
+  var question = new Question({
+    title: req.body.title,
+    text: req.body.text,
+    creator: req.body.name,
+    commentFlag: req.body.comment,
+    date: new Date().toLocaleString(),
+    author: req.body.user,
+    tag: req.body.tag,
+    creatorData: {name: req.body.name, image: req.body.image, platform: req.body.platform}
+  });
+
+  question.save(function(err) {
+    if (err) throw err;
+    res.json({
+      success: true,
+      message: "Question Send!"
+    })
+  });
+});
+
+
+router.post('/listQuestion',function(req,res,next){
+  if(!req.body.name)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  Question.find({"creator": req.body.name},function(err,questionAll){
+    if(err)
+      throw(err);
+
+      res.json({
+        success: true,
+        message: "Found element",
+        data: questionAll
+      })
+    })
+});
+
+router.post('/listAllQuestion', function(req,res){
+  Question.find({},function(err,questionAll){
+    if(err)
+      throw(err);
+
+      res.json({
+        success: true,
+        message: "Found element",
+        data: questionAll
+      })
+  })
+});
+
+
 
 
 module.exports = router;

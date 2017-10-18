@@ -60,7 +60,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: '/partials/createQuestion.html',
         controller: 'createQuestionController',
         params:{
-          name: ""
+          name: "",
+          image: "",
+          platform:"",
         }
       });
 });

@@ -8,7 +8,7 @@ var app = angular.module('app', [ 'ui.router',
 
 var path = "http://localhost:3000/";
 
-app.run(function($rootScope, $localStorage, $state, Notification){
+app.run(function($rootScope, $localStorage,$window, $state, Notification){
   $rootScope.user = ($localStorage.user != null && $localStorage.user.token != "") ? $localStorage.user : "";
 
   $rootScope.logout = function() {
@@ -21,5 +21,16 @@ app.run(function($rootScope, $localStorage, $state, Notification){
   $rootScope.myQuestion = function(){
     $state.go('questionPage',{name: $rootScope.user.name, image: $rootScope.user.profileImage, platform: $rootScope.user.platform})
   }
+
+  $window.onbeforeunload = function (e) {
+    var confirmation = {};
+    var event = $rootScope.$broadcast('onBeforeUnload', confirmation);
+    if (event.defaultPrevented) {
+        return confirmation.message;
+    }
+};
+   // handle the exit event
+
+
 
 });
