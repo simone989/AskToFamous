@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User   = require('../app/models/User'); // get our mongoose models
 var Question   = require('../app/models/Question'); // get our mongoose models
+var Notify = require('../app/models/Notify');
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 var nodemailer  = require('nodemailer');
@@ -238,6 +239,18 @@ router.get('/verify', function(req,res){
               res.end();
             };
           });
+          var notify = new Notify({
+            idUser: id_token,
+            textNotify: "Congratulation, your account as been verify!",
+            date: new Date().toLocaleString(),
+            look: false,
+            idUserMitt: "None"
+          });
+
+          notify.save(function(err) {
+            if (err) throw err;
+            console.log("ok salvata")
+          });
       });
   });
 
@@ -332,6 +345,7 @@ router.post('/upload',function(req,res,next){
         });
       }
       else{
+
         next();
       }
     });
@@ -345,6 +359,7 @@ router.post('/upload',function(req,res,next){
           User.update({"name": req.query.name}, {"$set": {"profileImage": randomString}}, function(err, nick){
             if(err)
               throw(err);
+
               return res.json({
                 success: true,
                 message: "Image Upload",
@@ -399,8 +414,6 @@ router.post('/listUser',function(req,res,next){
         var send= {name: user[Creator].name, image: user[Creator].profileImage, platform: user[Creator].platform}
         resultData.push(send)
       }
-
-
     }
     res.json({
       success: true,
@@ -431,6 +444,8 @@ router.post('/sendQuestion',function(req,res,next){
         message: "No Creator Found"
       });
     }else {
+      req.decoded= {}
+      req.decoded.userId= user[0]["_id"]
       next();
     }
   })
@@ -445,6 +460,7 @@ router.post('/sendQuestion',function(req,res,next){
         message: "No User Found"
       });
     }else {
+
       next();
     }
   })
@@ -468,6 +484,18 @@ router.post('/sendQuestion',function(req,res,next){
       success: true,
       message: "Question Send!"
     })
+  });
+
+  var notify = new Notify({
+    idUser: req.decoded.userId,
+    textNotify: "Your have new question!",
+    date: new Date().toLocaleString(),
+    look: false,
+    idUserMitt: "None"
+  });
+  notify.save(function(err) {
+    if (err) throw err;
+    console.log("ok salvata")
   });
 });
 
@@ -497,7 +525,6 @@ router.post('/listAllQuestion', function(req,res){
   Question.find({},function(err,questionAll){
     if(err)
       throw(err);
-
       res.json({
         success: true,
         message: "Found element",
@@ -534,28 +561,73 @@ router.post('/sendReply',function(req,res,next){
       res.json({ success: false, message: 'Failed to authenticate token.' });
     } else {
       // if everything is good, save to request for use in other routes
+      req['decoded'] = { "_id": "","nameAuth": ""}
+      req['decoded']['_id'] = decoded['$__']['_id']
       next();
     }
   });
 
 },function(req,res,next){
-  Question.find({"_id": req.body.idQuestion, "creator": req.body.name  },function(err,user){
+  Question.find({"_id": req.body.idQuestion, "creator": req.body.name  },function(err,question){
     if(err)
       throw(err);
-    if(!user[0]){
-      res.json({
-        success: false,
-        message: "Error Authentication."
-      });
-    }else {
-      next();
-    }
+      if(!question[0]){
+        res.json({
+          success: false,
+          message: "Error Authentication1."
+        });
+      }
+    User.findOne({"_id": req['decoded']['_id'], name: question[0].creator },function(err,user){
+      if(!user){
+
+        res.json({
+          success: false,
+          message: "Error Authentication2."
+        });
+      }else {
+        console.log("qui metto la var")
+
+        req['decoded']['nameAuth'] = question[0].author
+        next();
+      }
+    })
   })
 },function(req,res,next){
   Question.update({"_id": req.body.idQuestion}, {"$set": {"reply": req.body.text, "dataReply": new Date().toLocaleString() } }, function(err,update){
     if(err)
       throw(err);
       console.log(update)
+      console.log(req['decoded']['nameAuth'])
+      User.findOne({"name":req['decoded']['nameAuth'] },function(err,user){
+        if(err)
+          throw(err);
+          //notify for user
+          console.log(user)
+          var notify = new Notify({
+            idUser: user['_id'],
+            textNotify: "Congratulation, your creator reply to you!",
+            date: new Date().toLocaleString(),
+            look: false,
+            idUserMitt: req['decoded']['_id']
+          });
+          notify.save(function(err) {
+            if (err) throw err;
+            console.log("ok salvata")
+          });
+
+      })
+
+      var notify = new Notify({
+        idUser: req['decoded']['_id'],
+        textNotify: "Congratulation, your balance as ",
+        date: new Date().toLocaleString(),
+        look: false,
+        idUserMitt: "None"
+      });
+      notify.save(function(err) {
+        if (err) throw err;
+        console.log("ok salvata")
+      });
        res.json({
         success: true,
         message: "You Reply as be send."
@@ -595,29 +667,132 @@ router.post('/getBalance',function(req,res,next){
 
 },function(req,res,next){
   jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
     if (err) {
       res.json({
         success: false,
         message: 'Failed to authenticate token.'
       });
     } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
       // if everything is good, save to request for use in other routes
       next();
     }
   });
 
 },function(req,res,next){
-  User.findOne({"creator": true, "name":req.body.name },function(err,user){
+  User.findOne({"creator": true, "name":req.body.name, "_id": req.decoded['_id'] },function(err,user){
+    if(err)
+      throw(err);
+      if(user){
+        res.json({
+          success: true,
+          message: "ok",
+          balance: user.balance
+        });
+      }else{
+        res.json({
+          success: false,
+          message: "You are not authenticate"
+        });
+
+      }
+  })
+});
+
+router.post('/getNotify',function(req,res,next){
+  if(!req.body.token || !req.body.name )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
+},function(req,res,next){
+  Notify.find({"idUser":req['decoded']['_id'], 'look':false },function(err,user){
+    if(err)
+      throw(err);
+      if(user[0]){
+        res.json({
+          success: true,
+          message: "ok",
+          notify: user
+        });
+      }else{
+        res.json({
+          success: true,
+          message: "ok",
+          notify: []
+        });
+      }
+  })
+})
+
+
+router.post('/removeNotify',function(req,res,next){
+  if(!req.body.token || !req.body.idNotify )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      next();
+    }
+  });
+},function(req,res,next){
+  Notify.find({"idUser":req['decoded']['_id'], '_id': req.body.idNotify },function(err,notify){
+    if(err)
+      throw(err);
+      if(!notify[0]){
+        res.json({
+          success: false,
+          message: "Error, no notify found",
+        });
+      }
+      else {
+        next()
+      }
+  })
+}, function(req,res,next){
+  Notify.update({"idUser":req['decoded']['_id'], '_id': req.body.idNotify },{"$set": {"look":true } },function(err,notify){
     if(err)
       throw(err);
       res.json({
         success: true,
         message: "ok",
-        balance: user.balance
       });
   })
+})
 
-});
 
 
 

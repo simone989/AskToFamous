@@ -2,33 +2,39 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
 
   $(function() {
     $('#commits').githubInfoWidget({ user: 'simone989', repo: 'AskToFamous', branch: 'master', last: 5, limitMessageTo: 60 });
+    setInterval(function(){
+      if ($rootScope.user){
+        $http({
+          method: 'POST',
+          url: path + "getBalance",
+          data: $.param({ name: $rootScope.user.name, token: $rootScope.user.token }),
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }).then(
+          function(res) {
+            if (res.data.success) {
+              //Notification.success(res.data.message)
+              if ($localStorage.user.balance !== res.data.balance){
+                $localStorage.user.balance = res.data.balance
+              }
 
-    $http({
-      method: 'POST',
-      url: path + "getBalance",
-      data: $.param({ name: $rootScope.user.name, token: $rootScope.user.token }),
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).then(
-      function(res) {
-        if (res.data.success) {
-          //Notification.success(res.data.message)
-          if ($localStorage.user.balance !== res.data.balance){
-            $localStorage.user.balance = res.data.balance
+            }
+            else{
+              if (res.data.message == 'Failed to authenticate token.'){
+                Notification.error("Sorry your session is expired, Re-Login please.");
+                $rootScope.logout()
+              }else
+                Notification.error(res.data.message);
+            }
+          },
+          function(err) {
+            Notification.error("Error!");
           }
-
-        }
-        else{
-          if (res.data.message == 'Failed to authenticate token.'){
-            Notification.error("Sorry your session is expired, Re-Login please.");
-            $rootScope.logout()
-          }else
-            Notification.error(res.data.message);
-        }
-      },
-      function(err) {
-        Notification.error("Error!");
+        );
       }
-    );
+    }, 60000)
+
+
+
   });
 
 });
@@ -230,6 +236,8 @@ app.controller('loginController', function ($scope, $rootScope, $state, $http, $
           $rootScope.user = $localStorage.user;
           $state.go("home");
           Notification.success("Logged successfully");
+          $rootScope.getNotify()
+          $rootScope.getBalance()
         }
         else
           Notification.error(res.data.message);

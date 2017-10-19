@@ -60,12 +60,24 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
+              <div class="dropdown" ng-show="(user != '' && user != null && user.token != '')">
+                  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      {{ numberNotify }} Notify <i class="fa fa-bell"></i>
+                      <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu"  ng-show="(allNotify != [])" aria-labelledby="dropdownMenu1">
+                      <li ng-repeat="notify in allNotify"><a href="#!" ng-click="">{{ notify.textNotify }}&ensp; <a href="#!"ng-click="removeNotify(this)"> <i class="glyphicon glyphicon-remove-circle"></i></a> </a></li>
+                  <ul>
+              </div>
+            </li>
+            <li>
               <form class="navbar-form">
                 <div ng-show="(user != '' && user != null && user.token != '' && user.creator != true )" class="form-group">
                   <b class="text-primary"><i class="glyphicon glyphicon-user"></i><a href="#!/profile"> {{ user.name }}</a> </b>
                   &nbsp;&nbsp;&nbsp;
                   <button class="btn btn-primary" ng-click="logout()"><i class="glyphicon glyphicon-log-out"></i></button>
                 </div>
+
                 <div ng-show="(user != '' && user != null && user.token != '' && user.creator != false )" class="form-group">
                   <b class="text-primary">{{ user.balance }}<i class="fa fa-euro"></i></b>
                   <b class="text-primary"><i class="glyphicon glyphicon-user"></i><a href="#!/profileCreator"> {{ user.name }}</a> </b>
