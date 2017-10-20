@@ -158,7 +158,7 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
     $http({
       method: 'POST',
       url: path + "sendQuestion",
-      data: $.param({ name: $scope.nameCreator, user: $rootScope.user.name, title: $scope.title, text: $scope.text, tag: $scope.tag.split("#"), comment: $('input[name=commentR]:checked').val(), image: $scope.imageCreator, platform: $scope.platformCreator }),
+      data: $.param({token: $rootScope.user.token,  name: $scope.nameCreator, user: $rootScope.user.name, title: $scope.title, text: $scope.text, tag: $scope.tag.split("#"), comment: $('input[name=commentR]:checked').val(), image: $scope.imageCreator, platform: $scope.platformCreator }),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(
       function(res) {
@@ -237,7 +237,6 @@ app.controller('loginController', function ($scope, $rootScope, $state, $http, $
           $state.go("home");
           Notification.success("Logged successfully");
           $rootScope.getNotify()
-          $rootScope.getBalance()
         }
         else
           Notification.error(res.data.message);
@@ -340,10 +339,11 @@ app.controller('profileController',function($scope, $http, $state, Notification)
   $scope.name = "test";
 
   $scope.editUser = function() {
+
     $http({
       method: 'POST',
       url: path + "editUser",
-      data: $.param({name: $scope.user.name, address: $scope.address ? $scope.address : "None" , number: $scope.number ? $scope.number : "None" , gender: $scope.gender ? $scope.gender : "None" }),
+      data: $.param({ token: $rootScope.user.token, name: $scope.user.name, address: $scope.address ? $scope.address : "None" , number: $scope.number ? $scope.number : "None" , gender: $scope.gender ? $scope.gender : "None" }),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(
       function(res) {
@@ -358,6 +358,7 @@ app.controller('profileController',function($scope, $http, $state, Notification)
         else {
           Notification.error(res.data.message);
           $scope.alertMessage = res.data.message;
+          console.log(thisObje)
         }
       },
       function(err) {
@@ -387,7 +388,7 @@ app.controller('profileController',function($scope, $http, $state, Notification)
     $http({
       method: 'POST',
       url: path + "editPassword",
-      data: $.param({name: $scope.user.name, oldPassword: $scope.oldPassword , newPassword: $scope.newPassword}),
+      data: $.param({token: $rootScope.user.token, name: $scope.user.name, oldPassword: $scope.oldPassword , newPassword: $scope.newPassword}),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(
       function(res) {
@@ -414,7 +415,7 @@ app.controller('profileController',function($scope, $http, $state, Notification)
 })
 
 
-app.controller('profileControllerCreator',function($scope, $http, $state, Upload,$timeout,Notification){
+app.controller('profileControllerCreator',function($scope, $http,$rootScope, $state, Upload,$timeout,Notification){
   $(function(){
     if($scope.user){
       if($scope.user.address != "None"){
@@ -444,7 +445,7 @@ app.controller('profileControllerCreator',function($scope, $http, $state, Upload
     $http({
       method: 'POST',
       url: path + "editUser",
-      data: $.param({name: $scope.user.name, address: $scope.address ? $scope.address : "None" , number: $scope.number ? $scope.number : "None" , gender: $scope.gender ? $scope.gender : "None", platform: $scope.platform ? $scope.platform : "None" }),
+      data: $.param({ token: $rootScope.user.token, name: $scope.user.name, address: $scope.address ? $scope.address : "None" , number: $scope.number ? $scope.number : "None" , gender: $scope.gender ? $scope.gender : "None", platform: $scope.platform ? $scope.platform : "None" }),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(
       function(res) {
@@ -489,7 +490,7 @@ app.controller('profileControllerCreator',function($scope, $http, $state, Upload
     $http({
       method: 'POST',
       url: path + "editPassword",
-      data: $.param({name: $scope.user.name, oldPassword: $scope.oldPassword , newPassword: $scope.newPassword}),
+      data: $.param({token: $rootScope.user.token, name: $scope.user.name, oldPassword: $scope.oldPassword , newPassword: $scope.newPassword}),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(
       function(res) {
@@ -520,7 +521,7 @@ app.controller('profileControllerCreator',function($scope, $http, $state, Upload
     if (file) {
         file.upload = Upload.upload({
             url: path + "upload",
-            params: { oldPhoto: $scope.user.profileImage, name: $scope.user.name},
+            params: {token: $rootScope.user.token, oldPhoto: $scope.user.profileImage, name: $scope.user.name},
             file: file
         });
         file.upload.then(function (response) {

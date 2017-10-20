@@ -37,8 +37,15 @@ app.run(function($rootScope, $localStorage,$window, $state, Notification, $http)
           $rootScope.numberNotify = res.data.notify.length
           $rootScope.allNotify = res.data.notify
         }
-        else
-          Notification.error(res.data.message);
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else{
+            Notification.error(res.data.message);
+            }
+          }
+        
       },
       function(err) {
         Notification.error("Error!");

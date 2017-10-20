@@ -15,16 +15,32 @@ router.get('/', function(req, res) {
 
 
 router.post('/editUser', function(req, res, next){
-  console.log(req.body.name+" "+req.body.address +"  "+req.body.gender+"  "+req.body.number);
-  if(!req.body.name || !req.body.address || !req.body.gender || !req.body.number)
+  console.log(req.body.name+" "+req.body.address +"  "+req.body.gender+"  "+req.body.number+"  "+req.body.token);
+  if(!req.body.name || !req.body.address || !req.body.gender || !req.body.number || !req.body.token )
     res.json({
       success: false,
       message: "You've to fill all the fields."
     });
   else
     next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
 },function(req,res, next){
-    User.find({name: req.body.name}, function(err, users){
+    User.find({name: req.body.name, _id: req['decoded']['_id']}, function(err, users){
       if(err)
         throw(err);
       if(!(users[0])){
@@ -51,15 +67,31 @@ router.post('/editUser', function(req, res, next){
 
 router.post('/editPassword', function(req, res, next){
   console.log(req.body.name+" "+req.body.oldPassword +"  "+req.body.newPassword);
-  if(!req.body.name || !req.body.oldPassword || !req.body.newPassword)
+  if(!req.body.name || !req.body.oldPassword || !req.body.newPassword ||!req.body.token)
     res.json({
       success: false,
       message: "You've to fill all the fields."
     });
   else
     next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
 },function(req,res, next){
-    User.find({name: req.body.name}, function(err, users){
+    User.find({name: req.body.name, _id:req['decoded']['_id']}, function(err, users){
       if(err)
         throw(err);
       if(!(users[0])){
@@ -335,7 +367,23 @@ router.post('/upload',function(req,res,next){
       next()
     }
   },function(req,res,next){
-    User.find({ "name": req.query.name}, function(err, users){
+    jwt.verify(req.query.token, config.secret, function(err, decoded) {
+
+      if (err) {
+        res.json({
+          success: false,
+          message: 'Failed to authenticate token.'
+        });
+      } else {
+        req['decoded'] = {}
+        req['decoded']['_id'] = decoded['$__']['_id']
+        //if (decoded['$__'])
+        // if everything is good, save to request for use in other routes
+        next();
+      }
+    });
+  },function(req,res,next){
+    User.find({"name": req.query.name, "_id":req['decoded']['_id']}, function(err, users){
       if(err)
         throw(err);
       if(!users){
@@ -426,13 +474,29 @@ router.post('/listUser',function(req,res,next){
 
 
 router.post('/sendQuestion',function(req,res,next){
-  if(!req.body.name || !req.body.user || !req.body.title || !req.body.text || !req.body.tag || !req.body.comment  )
+  if(!req.body.name || !req.body.user || !req.body.title || !req.body.text || !req.body.tag || !req.body.comment || !req.body.token )
     res.json({
       success: false,
       message: "You've to fill all the fields."
     });
   else
     next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
 },function(req,res,next){
   User.find({"creator": true, "name":req.body.name },function(err,user){
     if(err)
@@ -444,14 +508,13 @@ router.post('/sendQuestion',function(req,res,next){
         message: "No Creator Found"
       });
     }else {
-      req.decoded= {}
       req.decoded.userId= user[0]["_id"]
       next();
     }
   })
 
 },function(req,res,next){
-  User.find({"name":req.body.user },function(err,user){
+  User.find({"name":req.body.user,"_id":req['decoded']['_id'] },function(err,user){
     if(err)
       throw(err);
     if(!user[0]){
