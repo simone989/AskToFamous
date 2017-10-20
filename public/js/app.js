@@ -45,7 +45,7 @@ app.run(function($rootScope, $localStorage,$window, $state, Notification, $http)
             Notification.error(res.data.message);
             }
           }
-        
+
       },
       function(err) {
         Notification.error("Error!");
@@ -77,6 +77,18 @@ app.run(function($rootScope, $localStorage,$window, $state, Notification, $http)
     );
   }
 
+  $rootScope.goToPage = function(thisObje){
+    console.log(thisObje)
+    if (thisObje.notify.idUserMitt != "None" && thisObje.notify.idUserMitt != "Balance"){
+      $state.go('singleQuestionPage', {idQuestion: thisObje.notify.idUserMitt})
+      $rootScope.removeNotify(thisObje)
+    }
+    else if((thisObje.notify.idUserMitt == "Balance")){
+      console.log("entra2")
+      $state.go('home') //DA METETRE SU BALANCE
+    }
+  }
+
   $window.onbeforeunload = function (e) {
       var confirmation = {};
       var event = $rootScope.$broadcast('onBeforeUnload', confirmation);
@@ -85,7 +97,8 @@ app.run(function($rootScope, $localStorage,$window, $state, Notification, $http)
       }
     };
   setInterval(function(){
-    $rootScope.getNotify()
+    if ($rootScope.user != null)
+      $rootScope.getNotify()
   }, 60000)
  // handle the exit event
  if ($rootScope.user != null)

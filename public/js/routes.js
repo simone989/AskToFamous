@@ -64,5 +64,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
           image: "",
           platform:"",
         }
-      });
+      })
+      .state('singleQuestionPage',{
+        url: '/singleQuestionPage',
+        templateUrl: '/partials/singleQuestionPage.html',
+        controller: 'singleQuestionPageController',
+        params:{
+          idQuestion: "",
+        }
+      })
 });

@@ -541,25 +541,29 @@ router.post('/sendQuestion',function(req,res,next){
     dateReply: "None"
   });
 
-  question.save(function(err) {
+  question.save(function(err,question) {
     if (err) throw err;
+
     res.json({
       success: true,
       message: "Question Send!"
     })
+
+    var notify = new Notify({
+      idUser: req.decoded.userId,
+      textNotify: "Your have new question!",
+      date: new Date().toLocaleString(),
+      look: false,
+      idUserMitt: question._id
+    });
+
+    notify.save(function(err) {
+      if (err) throw err;
+      console.log("ok salvata")
+    });
   });
 
-  var notify = new Notify({
-    idUser: req.decoded.userId,
-    textNotify: "Your have new question!",
-    date: new Date().toLocaleString(),
-    look: false,
-    idUserMitt: "None"
-  });
-  notify.save(function(err) {
-    if (err) throw err;
-    console.log("ok salvata")
-  });
+
 });
 
 
@@ -656,7 +660,7 @@ router.post('/sendReply',function(req,res,next){
     })
   })
 },function(req,res,next){
-  Question.update({"_id": req.body.idQuestion}, {"$set": {"reply": req.body.text, "dataReply": new Date().toLocaleString() } }, function(err,update){
+  Question.update({"_id": req.body.idQuestion}, {"$set": {"reply": req.body.text, "dateReply": new Date().toLocaleString() } }, function(err,update){
     if(err)
       throw(err);
       console.log(update)
@@ -671,7 +675,7 @@ router.post('/sendReply',function(req,res,next){
             textNotify: "Congratulation, your creator reply to you!",
             date: new Date().toLocaleString(),
             look: false,
-            idUserMitt: req['decoded']['_id']
+            idUserMitt: req.body.idQuestion
           });
           notify.save(function(err) {
             if (err) throw err;

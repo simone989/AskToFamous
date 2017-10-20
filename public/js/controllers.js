@@ -40,6 +40,83 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
 });
 
 
+
+app.controller('singleQuestionPageController',function($scope, $rootScope, $state, $stateParams, $http, $localStorage, Notification){
+  $(function(){
+    console.log("QUIII")
+    $scope.idQuestion = $stateParams.idQuestion
+    $http({
+      method: 'POST',
+      url: path + "listAllQuestion",
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        console.log("entra quii")
+        $scope.allQuestion= []
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          for( question in res.data.data){
+            if(res.data.data[question]['_id'] == $scope.idQuestion){
+              $scope.allQuestion.push(res.data.data[question])
+            }
+          }
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+  })
+
+  $scope.replyQuestion = function(thisObje,replyModel){
+    if(!(replyModel)){
+      Notification.error("Please set all fields");
+      return
+    }
+    console.log($rootScope)
+    console.log($scope.reply)
+
+    $http({
+      method: 'POST',
+      url: path + "sendReply",
+      data: $.param({ token: $rootScope.user.token, "text": replyModel, name: thisObje.question.creatorData.name, idQuestion: thisObje.question._id }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          Notification.success(res.data.message)
+          Notification.success("Congratu hai aumentato il tuo bilancio.")
+          $state.reload();
+          //$state.go('home')
+          console.log($rootScope.user)
+          //$state.go('questionPage',{name: $rootScope.user.name, image: $rootScope.user.profileImage, platform: $rootScope.user.platform })
+        }
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+
+  }
+
+  $scope.changePage = function(thisObje){
+    $state.go('createQuestion',{name: thisObje.nameCreator,image: thisObje.imageCreator, platform: thisObje.platformCreator})
+  }
+
+});
+
+
 app.controller('questionPageController',function($scope, $rootScope, $state, $stateParams, $http, $localStorage, Notification){
   $(function(){
     $scope.nameCreator = $stateParams.name
@@ -85,9 +162,10 @@ app.controller('questionPageController',function($scope, $rootScope, $state, $st
         if (res.data.success) {
           Notification.success(res.data.message)
           Notification.success("Congratu hai aumentato il tuo bilancio.")
-          //$route.reload();
-          $state.go('home')
-          //$state.go('questionPage',{name: $scope.nameCreator, image: $scope.imageCreator, platform: $scope.platformCreator })
+          $state.reload();
+          //$state.go('home')
+          console.log($rootScope.user)
+          //$state.go('questionPage',{name: $rootScope.user.name, image: $rootScope.user.profileImage, platform: $rootScope.user.platform })
         }
         else{
           if (res.data.message == 'Failed to authenticate token.'){
