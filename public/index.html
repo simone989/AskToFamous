@@ -66,7 +66,7 @@
                       <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu"  ng-show="(allNotify != [])" aria-labelledby="dropdownMenu1">
-                      <li ng-repeat="notify in allNotify"><a href="#!" ng-click="goToPage(this)">{{ notify.textNotify }}&ensp; <a href="#!"ng-click="removeNotify(this)"> <i class="glyphicon glyphicon-remove-circle"></i></a> </a></li>
+                      <li ng-repeat="notify in allNotify"><a ng-click="goToPage(this)">{{ notify.textNotify }}&ensp; <a href="#!"ng-click="removeNotify(this)"> <i class="glyphicon glyphicon-remove-circle"></i></a> </a></li>
                   <ul>
               </div>
             </li>

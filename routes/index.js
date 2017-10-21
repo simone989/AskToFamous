@@ -3,6 +3,7 @@ var router = express.Router();
 var User   = require('../app/models/User'); // get our mongoose models
 var Question   = require('../app/models/Question'); // get our mongoose models
 var Notify = require('../app/models/Notify');
+var Comment = require('../app/models/Comment');
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 var nodemailer  = require('nodemailer');
@@ -172,7 +173,7 @@ router.post('/register', function(req, res, next){
         password: req.body.password,
         email: req.body.email,
         blocked: true,
-        admin: true,
+        admin: false,
         number: "None",
         address: "None",
         gender: "None",
@@ -689,7 +690,7 @@ router.post('/sendReply',function(req,res,next){
         textNotify: "Congratulation, your balance as ",
         date: new Date().toLocaleString(),
         look: false,
-        idUserMitt: "None"
+        idUserMitt: "Balance"
       });
       notify.save(function(err) {
         if (err) throw err;
@@ -859,6 +860,225 @@ router.post('/removeNotify',function(req,res,next){
       });
   })
 })
+
+
+router.post('/listComment',function(req,res,next){
+  if(!req.body.idQuestion)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  Comment.find({"idQuestion": req.body.idQuestion},function(err,comment){
+    if(err)
+      throw(err);
+      res.json({
+        success: true,
+        message: "Found element",
+        data: comment
+      })
+    })
+});
+
+
+router.post('/sendComment',function(req,res,next){
+  if(!req.body.token || !req.body.text || !req.body.author  || ! req.body.idQuestion || !req.body.creator )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.creator },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      req['decoded'] = { "_id": "",idCreator: user[0]["_id"]}
+      next();
+    }
+  })
+
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({ success: false, message: 'Failed to authenticate token.' });
+    } else {
+      // if everything is good, save to request for use in other routes
+      req['decoded']['_id'] = decoded['$__']['_id']
+      next();
+    }
+  });
+
+},function(req,res,next){
+  Question.find({"_id": req.body.idQuestion, "creator": req.body.creator  },function(err,question){
+    if(err)
+      throw(err);
+      if(!question[0]){
+        res.json({
+          success: false,
+          message: "No Question id found."
+        });
+      }
+      else{
+        next()
+      }
+  })
+},function(req,res,next){
+  User.findOne({"_id": req['decoded']['_id'], name: req.body.author},function(err,user){
+    if(!user){
+      res.json({
+        success: false,
+        message: "Error Authentication2."
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res){
+  var comment = new Comment({
+    text: req.body.text,
+    creator: req.body.creator,
+    date: new Date().toLocaleString(),
+    author: req.body.author,
+    idQuestion: req.body.idQuestion,
+    like: []
+  });
+  comment.save(function(err) {
+    if (err) throw err;
+    console.log("ok salvata")
+  });
+
+  var notify = new Notify({
+    idUser: req['decoded']['idCreator'],
+    textNotify: "Have new comment in you question.",
+    date: new Date().toLocaleString(),
+    look: false,
+    idUserMitt: req.body.idQuestion
+  });
+  notify.save(function(err) {
+    if (err) throw err;
+    console.log("ok salvata")
+  });
+  res.json({
+    success: true,
+    message: "Add Comment",
+  })
+
+});
+
+
+router.post('/sendLike',function(req,res,next){
+  if(!req.body.token || !req.body.name || ! req.body.idQuestion || !req.body.idComment )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({ success: false, message: 'Failed to authenticate token.' });
+    } else {
+
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      next();
+    }
+  });
+
+},function(req,res,next){
+  User.findOne({"_id": req['decoded']['_id'], name: req.body.name},function(err,user){
+    if(!user){
+      res.json({
+        success: false,
+        message: "Error Authentication."
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res){
+  Comment.update({"_id": req.body.idComment, "idQuestion":req.body.idQuestion },{"$push": {"like": req.body.name}},function(err,commentUpdate){
+    if(err)
+      throw(err);
+      Comment.findOne({"_id": req.body.idComment},function(err,comment){
+        var notify = new Notify({
+          idUser: req['decoded']['_id'],
+          textNotify: "Have new like in you comment.",
+          date: new Date().toLocaleString(),
+          look: false,
+          idUserMitt: req.body.idQuestion
+        });
+        notify.save(function(err) {
+          if (err) throw err;
+          console.log("ok salvata")
+        });
+        res.json({
+          success: true,
+          message: "Add like",
+          data: comment
+        })
+      })
+  })
+
+
+});
+
+router.post('/sendUnLike',function(req,res,next){
+  if(!req.body.token || !req.body.name || ! req.body.idQuestion || !req.body.idComment )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({ success: false, message: 'Failed to authenticate token.' });
+    } else {
+
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      next();
+    }
+  });
+
+},function(req,res,next){
+  User.findOne({"_id": req['decoded']['_id'], name: req.body.name},function(err,user){
+    if(!user){
+      res.json({
+        success: false,
+        message: "Error Authentication."
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res){
+  Comment.update({"_id": req.body.idComment, "idQuestion":req.body.idQuestion },{"$pull": {"like": req.body.name}},function(err,commentUpdate){
+    if(err)
+      throw(err);
+      Comment.findOne({"_id": req.body.idComment},function(err,comment){
+        res.json({
+          success: true,
+          message: "Remove like",
+          data: comment
+        })
+      })
+  })
+
+});
+
 
 
 

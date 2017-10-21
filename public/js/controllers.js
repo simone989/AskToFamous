@@ -3,7 +3,7 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
   $(function() {
     $('#commits').githubInfoWidget({ user: 'simone989', repo: 'AskToFamous', branch: 'master', last: 5, limitMessageTo: 60 });
     setInterval(function(){
-      if ($rootScope.user){
+      if ($rootScope.user.creator == true){
         $http({
           method: 'POST',
           url: path + "getBalance",
@@ -43,7 +43,6 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
 
 app.controller('singleQuestionPageController',function($scope, $rootScope, $state, $stateParams, $http, $localStorage, Notification){
   $(function(){
-    console.log("QUIII")
     $scope.idQuestion = $stateParams.idQuestion
     $http({
       method: 'POST',
@@ -122,6 +121,7 @@ app.controller('questionPageController',function($scope, $rootScope, $state, $st
     $scope.nameCreator = $stateParams.name
     $scope.imageCreator = $stateParams.image
     $scope.platformCreator = $stateParams.platform
+    $scope.allComment = {}
     $http({
       method: 'POST',
       url: path + "listQuestion",
@@ -143,6 +143,124 @@ app.controller('questionPageController',function($scope, $rootScope, $state, $st
     );
 
   })
+
+  $scope.openComment = function(thisObje){
+    $http({
+      method: 'POST',
+      url: path + "listComment",
+      data: $.param({ idQuestion: thisObje.question._id}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          $scope.allComment[thisObje.question._id] = res.data.data
+          if($("#"+thisObje.question._id+"DIV")[0].hidden == false)
+            $("#"+thisObje.question._id+"DIV")[0].hidden = true
+          else
+            $("#"+thisObje.question._id+"DIV")[0].hidden = false
+
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+  }
+
+  $scope.sendLike = function(thisObje){
+    console.log(thisObje)
+
+    $http({
+      method: 'POST',
+      url: path + "sendLike",
+      data: $.param({ token: $rootScope.user.token, name: $rootScope.user.name, idQuestion: thisObje.$parent.question._id, idComment: thisObje.comment._id}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+            Notification.success(res.data.message)
+            thisObje.comment= res.data.data
+        }
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+  }
+
+  $scope.sendUnLike = function(thisObje){
+    console.log(thisObje)
+
+    $http({
+      method: 'POST',
+      url: path + "sendUnLike",
+      data: $.param({ token: $rootScope.user.token, name: $rootScope.user.name, idQuestion: thisObje.$parent.question._id, idComment: thisObje.comment._id}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+            Notification.success(res.data.message)
+            thisObje.comment= res.data.data
+        }
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+  }
+
+  $scope.replyComment = function(thisObje,commentModel){
+    if(!(commentModel)){
+      Notification.error("Please set all fields");
+      return
+    }
+    $http({
+      method: 'POST',
+      url: path + "sendComment",
+      data: $.param({ token: $rootScope.user.token, "text": commentModel, author: $rootScope.user.name, idQuestion: thisObje.question._id, creator: thisObje.question.creator  }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          Notification.success(res.data.message)
+          $state.reload();
+          //$state.go('home')
+          //$state.go('questionPage',{name: $rootScope.user.name, image: $rootScope.user.profileImage, platform: $rootScope.user.platform })
+        }
+        else{
+          if (res.data.message == 'Failed to authenticate token.'){
+            Notification.error("Sorry your session is expired, Re-Login please.");
+            $rootScope.logout()
+          }else
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+
+  }
+
+
 
   $scope.replyQuestion = function(thisObje,replyModel){
     if(!(replyModel)){
@@ -394,7 +512,7 @@ app.controller('registerCreatorController', function ($scope, $http, $state, Not
 
 });
 
-app.controller('profileController',function($scope, $http, $state, Notification){
+app.controller('profileController',function($scope,$rootScope, $http, $state, Notification){
   $(function(){
     if($scope.user){
       if($scope.user.address != "None"){
@@ -417,7 +535,6 @@ app.controller('profileController',function($scope, $http, $state, Notification)
   $scope.name = "test";
 
   $scope.editUser = function() {
-
     $http({
       method: 'POST',
       url: path + "editUser",
