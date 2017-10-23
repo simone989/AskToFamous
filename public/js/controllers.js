@@ -572,25 +572,56 @@ app.controller('allQuestionController',function($scope, $rootScope, $state, $htt
   }
 });
 
-app.controller('createQuestionController',function($scope, $rootScope, $stateParams, $state, $http, $localStorage, Notification){
+app.controller('createQuestionController',function($scope, $rootScope, $stateParams, $state, $http, JSTagsCollection,$localStorage, Notification){
   $(function(){
     $scope.nameCreator = $stateParams.name
     $scope.imageCreator = $stateParams.image
     $scope.platformCreator = $stateParams.platform
     $scope.user = $rootScope.user
+    $scope.hashtagSend = []
+    $http({
+      method: 'POST',
+      url: path + "getListHashtag",
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+            $scope.hashtagServer = res.data.data
+        }
+        else
+        {
+            Notification.error(res.data.message);
+        }
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
   })
 
   $scope.sendQuestion= function(){
-    if(!($scope.title && $scope.text && $scope.tag && $('input[name=commentR]:checked').val())){
+    if(!($scope.title && $scope.text && $('input[name=commentR]:checked').val())){
       Notification.error("Please set all fields");
       return
     }
 
 
+
+    for( tag in $scope.tagsInput.tags){
+      $scope.hashtagSend.push($scope.tagsInput.tags[tag].value)
+    }
+
+    if ($scope.hashtagSend.length == 0){
+        Notification.error("Please set the tags");
+        return
+    }
+    console.log($scope.hashtagSend)
+
     $http({
       method: 'POST',
       url: path + "sendQuestion",
-      data: $.param({token: $rootScope.user.token,  name: $scope.nameCreator, user: $rootScope.user.name, title: $scope.title, text: $scope.text, tag: $scope.tag.split("#"), comment: $('input[name=commentR]:checked').val(), image: $scope.imageCreator, platform: $scope.platformCreator }),
+      data: $.param({token: $rootScope.user.token,  name: $scope.nameCreator, user: $rootScope.user.name, title: $scope.title, text: $scope.text, tag: $scope.hashtagSend, comment: $('input[name=commentR]:checked').val(), image: $scope.imageCreator, platform: $scope.platformCreator }),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(
       function(res) {
@@ -607,9 +638,27 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
         Notification.error("Error!");
       }
     );
-
-
   }
+
+  $scope.changeTag = function(){
+    if ($scope.tag == undefined)
+     return
+    for (tag in $scope.allHashtag){
+      if (tag.includes($scope.tag.replace("#",""))){
+        console.log("mostra")
+      }
+    }
+  }
+ $scope.tagsInput = new JSTagsCollection([]);
+  $scope.jsTagOptions = {
+    "tags": $scope.tagsInput,
+    "texts": {
+      "inputPlaceHolder": "Add your tag"
+    }
+  };
+
+
+
 });
 app.controller('findController',function($scope, $rootScope, $state, $http, $localStorage, Notification){
 

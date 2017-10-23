@@ -25,7 +25,7 @@
 
           <button  class="btn btn-lg btn-primary"  ng-click="openComment(this)" ng-show="(question.commentFlag == true)" >Comment<i class="fa fa-comment" /></button>
           </div>
-          <div id="{{question._id}}DIV" hidden= true>
+          <div id="{{question._id}}DIV" hidden = false>
             <div  ng-repeat="comment in allComment[question._id]">
               <span>{{comment.author}} on {{ comment.date}}</span>
               <textarea class="form-control" cols="50" rows="2" readonly>{{ comment.text }}</textarea>

@@ -4,6 +4,7 @@ var User   = require('../app/models/User'); // get our mongoose models
 var Question   = require('../app/models/Question'); // get our mongoose models
 var Notify = require('../app/models/Notify');
 var Comment = require('../app/models/Comment');
+var Hashtag = require('../app/models/Hashtag')
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 var nodemailer  = require('nodemailer');
@@ -550,6 +551,30 @@ router.post('/sendQuestion',function(req,res,next){
       message: "Question Send!"
     })
 
+    Hashtag.find({},function(err,hashtag){
+      if(err)
+        throw(err);
+        ArrayTagCheck = []
+        for (tag in hashtag)
+            ArrayTagCheck.push(hashtag[tag].text)
+        console.log(ArrayTagCheck)
+        console.log(req.body.tag)
+        for( tag in req.body.tag){
+          if (ArrayTagCheck.indexOf(req.body.tag[tag].replace(" ","")) == -1){
+
+            var newHashtag = new Hashtag({
+              text: req.body.tag[tag].replace(" ",""),
+              dateAdd: new Date().toLocaleString()
+            });
+            newHashtag.save(function(err){
+              if (err) throw err;
+            })
+          }
+        }
+    })
+
+
+
     var notify = new Notify({
       idUser: req.decoded.userId,
       textNotify: "Your have new question!",
@@ -1079,6 +1104,38 @@ router.post('/sendUnLike',function(req,res,next){
 
 });
 
+
+router.post('/getListHashtag',function(req,res){
+  Hashtag.find({},function(err,hashtag){
+    if(err)
+      throw(err);
+    ArrayHashtag2 = []
+    ArrayHashtag = {}
+    for( tag in hashtag)
+  //    ArrayHashtag[hashtag[tag].text] = 0
+      ArrayHashtag2.push(hashtag[tag].text)
+      /*
+    Question.find({},function(err, questions){
+      if(err)
+        throw(err);
+      for (question in questions){
+        for(var index = 0 ; index < questions[question].tag.length ; index++){
+          //console.log(questions[question].tag)
+          if (ArrayHashtag[questions[question].tag[index]] >= 0)
+            ArrayHashtag[questions[question].tag[index]]++
+        }
+      }
+      */
+      res.json({
+        success: true,
+        message: "list hashtag",
+        data: ArrayHashtag2
+      })
+
+    //})
+
+  })
+});
 
 
 

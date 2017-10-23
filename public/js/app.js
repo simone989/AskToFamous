@@ -4,6 +4,7 @@ var app = angular.module('app', [ 'ui.router',
                                   'ngStorage',
                                   'angular-loading-bar',
                                   'ngFileUpload',
+                                  'jsTag',
                                 ]);
 
 var path = "http://localhost:3000/";
