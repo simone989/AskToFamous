@@ -1036,17 +1036,19 @@ router.post('/sendLike',function(req,res,next){
     if(err)
       throw(err);
       Comment.findOne({"_id": req.body.idComment},function(err,comment){
-        var notify = new Notify({
-          idUser: req['decoded']['_id'],
-          textNotify: "Have new like in you comment.",
-          date: new Date().toLocaleString(),
-          look: false,
-          idUserMitt: req.body.idQuestion
-        });
-        notify.save(function(err) {
-          if (err) throw err;
-          console.log("ok salvata")
-        });
+        if (comment.author != req.body.name){
+          var notify = new Notify({
+            idUser: req['decoded']['_id'],
+            textNotify: "Have new like in you comment.",
+            date: new Date().toLocaleString(),
+            look: false,
+            idUserMitt: req.body.idQuestion
+          });
+          notify.save(function(err) {
+            if (err) throw err;
+            console.log("ok salvata")
+          });
+        }
         res.json({
           success: true,
           message: "Add like",
@@ -1054,8 +1056,6 @@ router.post('/sendLike',function(req,res,next){
         })
       })
   })
-
-
 });
 
 router.post('/sendUnLike',function(req,res,next){

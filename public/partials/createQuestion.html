@@ -8,7 +8,8 @@
           <h2 class="form-signin-heading"><i class="glyphicon glyphicon-user"></i> Login</h2>
           <input type="text" ng-model="title" class="form-control" placeholder="Title" required autofocus>
           <textarea ng-model="text" class="form-control" placeholder="What do you want to ask?" cols="50" rows="8" maxlength="260"required/>
-          <div><js-tag js-tag-options="jsTagOptions" ></js-tag></div>
+          <div id="jsTagDIV"><js-tag js-tag-options="jsTagOptions" ></js-tag></div>
+          <div id="suggDIV" ></div>
           <lable>Do you want to enable comments?</label>
           <label class="radio-inline"><input type="radio" name="commentR" value="true">Yes</label>
           <label class="radio-inline"><input type="radio" name="commentR" value="false">No</label>

@@ -3,7 +3,7 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
   $(function() {
     $('#commits').githubInfoWidget({ user: 'simone989', repo: 'AskToFamous', branch: 'master', last: 5, limitMessageTo: 60 });
     setInterval(function(){
-      if ($rootScope.user.creator == true){
+      if ($rootScope.user.creator && $rootScope.user.creator==true ){
         $http({
           method: 'POST',
           url: path + "getBalance",
@@ -60,6 +60,24 @@ app.controller('singleQuestionPageController',function($scope, $rootScope, $stat
               $scope.allQuestion.push(res.data.data[question])
             }
           }
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+    $http({
+      method: 'POST',
+      url: path + "listComment",
+      data: $.param({ idQuestion: $scope.idQuestion}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          $scope.allComment[$scope.idQuestion] = res.data.data
         }
         else
           Notification.error(res.data.message);
@@ -579,24 +597,6 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
     $scope.platformCreator = $stateParams.platform
     $scope.user = $rootScope.user
     $scope.hashtagSend = []
-    $http({
-      method: 'POST',
-      url: path + "getListHashtag",
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).then(
-      function(res) {
-        if (res.data.success) {
-            $scope.hashtagServer = res.data.data
-        }
-        else
-        {
-            Notification.error(res.data.message);
-        }
-      },
-      function(err) {
-        Notification.error("Error!");
-      }
-    );
 
   })
 
@@ -616,7 +616,6 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
         Notification.error("Please set the tags");
         return
     }
-    console.log($scope.hashtagSend)
 
     $http({
       method: 'POST',
@@ -640,15 +639,6 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
     );
   }
 
-  $scope.changeTag = function(){
-    if ($scope.tag == undefined)
-     return
-    for (tag in $scope.allHashtag){
-      if (tag.includes($scope.tag.replace("#",""))){
-        console.log("mostra")
-      }
-    }
-  }
  $scope.tagsInput = new JSTagsCollection([]);
   $scope.jsTagOptions = {
     "tags": $scope.tagsInput,

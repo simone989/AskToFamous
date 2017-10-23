@@ -98,11 +98,11 @@ app.run(function($rootScope, $localStorage, $window, $state, Notification, $http
       }
     };
   setInterval(function(){
-    if ($rootScope.user != null)
+    if ($rootScope.user && ($rootScope.user != "" || $rootScope.user != null))
       $rootScope.getNotify()
   }, 10000)
  // handle the exit event
- if ($rootScope.user != null)
+ if ($rootScope.user && ($rootScope.user != "" || $rootScope.user != null))
   $rootScope.getNotify()
 
 
