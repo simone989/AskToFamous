@@ -5,6 +5,7 @@ var Question   = require('../app/models/Question'); // get our mongoose models
 var Notify = require('../app/models/Notify');
 var Comment = require('../app/models/Comment');
 var Hashtag = require('../app/models/Hashtag')
+var Balance = require('../app/models/Balance')
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 var nodemailer  = require('nodemailer');
@@ -727,12 +728,84 @@ router.post('/sendReply',function(req,res,next){
       })
 
   });
+  var balance = new Balance({
+    idUser: req['decoded']['_id'],
+    deleted: false,
+    date: new Date().toLocaleString(),
+    value: 0.5,
+    dateWithdrawal: "None",
+    action: "Reply Question",
+    actionId: req.body.idQuestion
+  });
+  balance.save(function(err) {
+    if (err) throw err;
+    console.log("ok salvata")
+  });
+
   User.update({"creator": true, "name":req.body.name},{"$inc": {"balance": 1.0}  },function(err,user){
     if(err)
       throw(err);
       console.log(user)
   })
 
+});
+
+router.post('/getListBalance',function(req,res,next){
+  if(!req.body.token || !req.body.name )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
+},function(req,res,next){
+  Balance.find({"idUser": req['decoded']['_id'], "deleted":false },function(err,balance){
+    if(err)
+      throw(err);
+      if(balance[0]){
+        res.json({
+          success: true,
+          message: "ok",
+          balance: balance
+        });
+      }else{
+        res.json({
+          success: true,
+          message: "ok",
+          balance: []
+        });
+
+      }
+  })
 });
 
 
@@ -794,6 +867,72 @@ router.post('/getBalance',function(req,res,next){
       }
   })
 });
+
+router.post('/getBalanceNew',function(req,res,next){
+  if(!req.body.token ||  !req.body.name  )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
+
+},function(req,res,next){
+  Balance.find({"idUser": req['decoded']['_id'], "deleted":false },function(err,allBalance){
+    if(err)
+      throw(err);
+      if(allBalance[0]){
+        var balanceTotal = 0;
+        for (balance in allBalance){
+          balanceTotal+= allBalance[balance].value
+        }
+
+        res.json({
+          success: true,
+          message: "ok",
+          balance: balanceTotal
+        });
+      }else{
+        res.json({
+          success: true,
+          message: "ok",
+          balance: 0
+        });
+
+      }
+  })
+});
+
 
 router.post('/getNotify',function(req,res,next){
   if(!req.body.token || !req.body.name )

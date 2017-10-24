@@ -84,7 +84,7 @@ app.run(function($rootScope, $localStorage, $window, $state, Notification, $http
       //$rootScope.removeNotify(thisObje)
     }
     else if((thisObje.notify.idUserMitt == "Balance")){
-      $state.go('home') //DA METETRE SU BALANCE
+      $state.go('balance') //DA METETRE SU BALANCE
     }
   }
 

@@ -6,14 +6,15 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
       if ($rootScope.user.creator && $rootScope.user.creator==true ){
         $http({
           method: 'POST',
-          url: path + "getBalance",
+          url: path + "getBalanceNew",
           data: $.param({ name: $rootScope.user.name, token: $rootScope.user.token }),
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(
           function(res) {
             if (res.data.success) {
               //Notification.success(res.data.message)
-              if ($localStorage.user.balance !== res.data.balance){
+              console.log(res.data.balance)
+              if ($localStorage.user.balance != res.data.balance){
                 $localStorage.user.balance = res.data.balance
               }
 
@@ -31,13 +32,44 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
           }
         );
       }
-    }, 60000)
-
-
+    }, 10000)
 
   });
 
 });
+
+app.controller('balanceController',function($scope,$rootScope,$state, $http, $localStorage, Notification){
+  $(function(){
+      $http({
+        method: 'POST',
+        url: path + "getListBalance",
+        data: $.param({ token: $rootScope.user.token, name: $rootScope.user.name}),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).then(
+        function(res) {
+          if (res.data.success) {
+            //Notification.success(res.data.message)
+            $scope.balances= res.data.balance
+            $scope.valueBalance = 0
+            for (balance in res.data.balance){
+              $scope.valueBalance+= res.data.balance[balance].value
+            }
+            console.log(res.data.balance)
+          }
+          else
+            Notification.error(res.data.message);
+        },
+        function(err) {
+          Notification.error("Error!");
+        }
+      );
+    })
+
+  $scope.changePage = function(thisObje){
+    console.log(thisObje)
+    $state.go('singleQuestionPage', {idQuestion: thisObje.balance.actionId}, {reload: true})
+  }
+})
 
 
 

@@ -73,4 +73,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
           idQuestion: "",
         }
       })
+      .state('balance',{
+        url: '/balance',
+        templateUrl: '/partials/balance.html',
+        controller: 'balanceController'
+      })
 });

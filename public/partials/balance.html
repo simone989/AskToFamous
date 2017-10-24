@@ -1,0 +1,48 @@
+<div class="container-fluid">
+  <h2>List all trasaction </h2>
+  <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Value</th>
+        <th>Action</th>
+        <th>Question</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="balance in balances">
+        <th>{{ balance.date }}</th>
+        <th>{{ balance.value }}</th>
+        <th>{{ balance.action }}</th>
+        <th><a style="cursor: pointer" ng-click="changePage(this)">{{balance.actionId}}</a></th>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <br>
+  <br>
+  <br>
+  <br>
+  <h2>List all Withdrawal </h2>
+  <div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date Withdrawal</th>
+        <th>Value</th>
+        <th>Destination</th>
+        <th>State</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="balance in balances">
+        <th>{{ balance.date }}</th>
+        <th>{{ balance.value }}</th>
+        <th>{{ balance.action }}</th>
+        <th><a style="cursor: pointer" ng-click="changePage(this)">{{balance.actionId}}</a></th>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
