@@ -24,6 +24,16 @@
   <br>
   <br>
   <br>
+  <form class="form-inline" ng-submit="withdrawFunction(valueWithdraw)">
+    <div class="form-group">
+      <label>how much do you want to withdraw?</label>
+      <input min= 0 max={{valueBalance}} step=".50" type="number" ng-change="changeValue(valueWithdraw)" class="form-control" ng-model="valueWithdraw" >
+        <button type="submit" class="btn btn-lg btn-primary">WithDraw</button>
+    </div>
+    <spam>Balance after Withdraw: <span id="spanID">{{valueBalanceChange}}</span><i class="fa fa-euro"></i></spam>
+
+  </form>
+
   <h2>List all Withdrawal </h2>
   <div class="table-responsive">
   <table class="table">

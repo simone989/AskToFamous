@@ -6,6 +6,7 @@ var Notify = require('../app/models/Notify');
 var Comment = require('../app/models/Comment');
 var Hashtag = require('../app/models/Hashtag')
 var Balance = require('../app/models/Balance')
+var Transactions = require('../app/models/Transactions')
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 var nodemailer  = require('nodemailer');
@@ -742,11 +743,6 @@ router.post('/sendReply',function(req,res,next){
     console.log("ok salvata")
   });
 
-  User.update({"creator": true, "name":req.body.name},{"$inc": {"balance": 1.0}  },function(err,user){
-    if(err)
-      throw(err);
-      console.log(user)
-  })
 
 });
 
@@ -788,7 +784,7 @@ router.post('/getListBalance',function(req,res,next){
     }
   });
 },function(req,res,next){
-  Balance.find({"idUser": req['decoded']['_id'], "deleted":false },function(err,balance){
+  Balance.find({"idUser": req['decoded']['_id']},function(err,balance){
     if(err)
       throw(err);
       if(balance[0]){
@@ -1251,20 +1247,8 @@ router.post('/getListHashtag',function(req,res){
     ArrayHashtag2 = []
     ArrayHashtag = {}
     for( tag in hashtag)
-  //    ArrayHashtag[hashtag[tag].text] = 0
+
       ArrayHashtag2.push(hashtag[tag].text)
-      /*
-    Question.find({},function(err, questions){
-      if(err)
-        throw(err);
-      for (question in questions){
-        for(var index = 0 ; index < questions[question].tag.length ; index++){
-          //console.log(questions[question].tag)
-          if (ArrayHashtag[questions[question].tag[index]] >= 0)
-            ArrayHashtag[questions[question].tag[index]]++
-        }
-      }
-      */
       res.json({
         success: true,
         message: "list hashtag",
@@ -1275,6 +1259,18 @@ router.post('/getListHashtag',function(req,res){
 
   })
 });
+
+
+/*
+router.post('/withdrawBalance',function(req,res,next){
+
+},function(req,res,next){
+
+},function(req,res,next){
+
+})
+
+*/
 
 
 

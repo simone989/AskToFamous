@@ -54,7 +54,7 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
             for (balance in res.data.balance){
               $scope.valueBalance+= res.data.balance[balance].value
             }
-            console.log(res.data.balance)
+            $scope.valueBalanceChange = $scope.valueBalance
           }
           else
             Notification.error(res.data.message);
@@ -68,6 +68,42 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
   $scope.changePage = function(thisObje){
     console.log(thisObje)
     $state.go('singleQuestionPage', {idQuestion: thisObje.balance.actionId}, {reload: true})
+  }
+
+  $scope.changeValue = function(valueWithdraw){
+    if (valueWithdraw == 0 || valueWithdraw == null){
+      $scope.valueBalanceChange = $scope.valueBalance
+      return
+    }
+    console.log(valueWithdraw)
+    $scope.valueBalanceChange = $scope.valueBalance - valueWithdraw
+  }
+
+  $scope.withdrawFunction = function(valueWithdraw){
+    if (valueWithdraw > $scope.valueBalance){
+        Notification.error("Value Withdraw error");
+        return
+    }
+
+    $http({
+      method: 'POST',
+      url: path + "withdrawBalance",
+      data: $.param({ token: $rootScope.user.token, name: $rootScope.user.name, valueWithdraw: valueWithdraw}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          Notification.success(res.data.message)
+
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
   }
 })
 
