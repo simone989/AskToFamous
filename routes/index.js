@@ -1261,17 +1261,167 @@ router.post('/getListHashtag',function(req,res){
 });
 
 
-/*
+
 router.post('/withdrawBalance',function(req,res,next){
+  if(!req.body.token || !req.body.name || ! req.body.valueWithdraw )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      next();
+    }
+  });
+},function(req,res,next){
+  User.findOne({"_id": req['decoded']['_id'], name: req.body.name},function(err,user){
+    if(!user){
+      res.json({
+        success: false,
+        message: "Error Authentication."
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res,next){
+  Balance.find({"idUser": req['decoded']['_id'], "deleted":false },function(err,allBalance){
+    if(err)
+      throw(err);
+      if(allBalance[0]){
+        var balanceTotal = 0;
+        for (balance in allBalance){
+          balanceTotal+= allBalance[balance].value
+        }
+        if(req.body.valueWithdraw > balanceTotal){
+          res.json({
+            success: false,
+            message: "Error value withdraw",
+          });
+        }else {
+          next()
+        }
+      }else{
+        res.json({
+          success: false,
+          message: "Error Balance",
+        });
+      }
+  })
 
 },function(req,res,next){
+  Balance.find({"idUser": req['decoded']['_id'], "deleted":false },function(err,allBalance){
+    if(err)
+      throw(err);
+      var ArrayIDBalanceUpdate = []
+      var valueCheckWithdraw = 0.0
 
-},function(req,res,next){
+      for (balance in allBalance){
+        valueCheckWithdraw+= allBalance[balance].value
+        ArrayIDBalanceUpdate.push(allBalance[balance]._id)
+        if(valueCheckWithdraw >=  req.body.valueWithdraw)
+          break
+      }
+      console.log(ArrayIDBalanceUpdate)
+      console.log(valueCheckWithdraw)
 
+
+      for( id in ArrayIDBalanceUpdate){
+        console.log(ArrayIDBalanceUpdate[id])
+        Balance.update({"_id": ArrayIDBalanceUpdate[id] },{"$set":{"deleted": true, "dateWithdrawal": new Date().toLocaleString()} },function(err,update){
+          if(err)
+            throw(err)
+            console.log(update)
+        })
+      }
+      res.json({
+        success: true,
+        message: "ok",
+      })
+
+      var Transaction = new Transactions({
+      idUser: req['decoded']['_id'],
+      date: new Date().toLocaleString(),
+      value : req.body.valueWithdraw,
+      destination: "Paypal",
+      state: "Completed"
+      });
+      Transaction.save(function(err) {
+        if (err) throw err;
+        console.log("ok salvata")
+      });
+  })
 })
 
-*/
 
+
+router.post('/getListTransaction',function(req,res,next){
+  if(!req.body.token || !req.body.name )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res,next){
+  jwt.verify(req.body.token, config.secret, function(err, decoded) {
+
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.'
+      });
+    } else {
+      req['decoded'] = {}
+      req['decoded']['_id'] = decoded['$__']['_id']
+      //if (decoded['$__'])
+      // if everything is good, save to request for use in other routes
+      next();
+    }
+  });
+},function(req,res,next){
+  Transactions.find({"idUser": req['decoded']['_id']},function(err,Transactions){
+    if(err)
+      throw(err);
+      if(Transactions[0]){
+        res.json({
+          success: true,
+          message: "ok",
+          balance: Transactions
+        });
+      }else{
+        res.json({
+          success: true,
+          message: "ok",
+          balance: []
+        });
+
+      }
+  })
+});
 
 
 

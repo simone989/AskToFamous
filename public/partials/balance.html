@@ -46,11 +46,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="balance in balances">
-        <th>{{ balance.date }}</th>
-        <th>{{ balance.value }}</th>
-        <th>{{ balance.action }}</th>
-        <th><a style="cursor: pointer" ng-click="changePage(this)">{{balance.actionId}}</a></th>
+      <tr ng-repeat="Transaction in allTransactions">
+        <th>{{ Transaction.date }}</th>
+        <th>{{ Transaction.value }}</th>
+        <th>{{ Transaction.destination }}</th>
+        <th>{{ Transaction.state }}</th>
       </tr>
     </tbody>
   </table>

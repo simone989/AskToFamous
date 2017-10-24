@@ -63,6 +63,26 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
           Notification.error("Error!");
         }
       );
+
+      $http({
+        method: 'POST',
+        url: path + "getListTransaction",
+        data: $.param({ token: $rootScope.user.token, name: $rootScope.user.name}),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }).then(
+        function(res) {
+          if (res.data.success) {
+            //Notification.success(res.data.message)
+            $scope.allTransactions= res.data.balance
+          }
+          else
+            Notification.error(res.data.message);
+        },
+        function(err) {
+          Notification.error("Error!");
+        }
+      );
+
     })
 
   $scope.changePage = function(thisObje){
@@ -94,6 +114,7 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
       function(res) {
         if (res.data.success) {
           Notification.success(res.data.message)
+          $state.reload()
 
         }
         else
@@ -103,7 +124,6 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
         Notification.error("Error!");
       }
     );
-
   }
 })
 
