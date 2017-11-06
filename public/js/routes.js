@@ -78,4 +78,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: '/partials/balance.html',
         controller: 'balanceController'
       })
+      .state('chartsUser',{
+        url: '/chartsUser',
+        templateUrl: '/partials/chartsUser.html',
+        controller: 'chartsUserController',
+        params: {
+          nameCreator: ""
+        }
+      })
 });

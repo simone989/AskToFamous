@@ -1,6 +1,10 @@
 <div class="container-fluid" ng-init="creator=[]">
   <div class="row">
     <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8 text-center">
+      <canvas id="bar" class="chart chart-bar"
+      chart-data="data" chart-labels="labels"> chart-series="series"
+    </canvas
+
         <h2 class="form-signin-heading">
           <img alt="Creator Pic" ng-show= "(imageCreator != 'None')" src="../images/profile/{{ imageCreator }}" height="150" width="150" />
           <img alt="Creator Pic" ng-show= "(imageCreator == 'None')" src="../images/profile-pictures.png" height="150" width="150" />
@@ -9,6 +13,7 @@
           <i ng-show= " (platformCreator == 'youtube')" class= "fa fa-youtube-play" />
           {{ nameCreator }}
         </h2>
+        <button class="btn btn-lg btn-primary btn-block" ng-click=changePageChart(this)>Show Statistichs </button>
         <div ng-show= "(user.name != nameCreator)">
           <button ng-show= "(user != '' && user != null && user.token != '' )" class="btn btn-lg btn-primary btn-block" ng-click=changePage(this)>Add new question </button>
           <button ng-show= "!(user != '' && user != null && user.token != '' )" class="btn btn-lg btn-primary btn-block" disabled> Sign in for add new question </button>
@@ -50,4 +55,6 @@
             </div>
           </div>
         </div>
+</div>
+</div>
 </div>
