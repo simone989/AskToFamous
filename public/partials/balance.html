@@ -1,7 +1,8 @@
 <div class="container-fluid">
   <h2>List all trasaction </h2>
+  <div class="col-md-offset-2 col-md-8 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8 text-center">
   <div class="table-responsive">
-  <table class="table">
+  <table class="table-bordered" width="100%">
     <thead>
       <tr>
         <th>Date</th>
@@ -20,13 +21,14 @@
     </tbody>
   </table>
   </div>
+</div>
   <br>
   <br>
   <br>
   <br>
   <form class="form-inline" ng-submit="withdrawFunction(valueWithdraw)">
     <div class="form-group">
-      <label>how much do you want to withdraw?</label>
+      <label>How much do you want to withdraw?</label>
       <input min= 0 max={{valueBalance}} step=".50" type="number" ng-change="changeValue(valueWithdraw)" class="form-control" ng-model="valueWithdraw" >
         <button type="submit" class="btn btn-lg btn-primary">WithDraw</button>
     </div>
@@ -35,8 +37,9 @@
   </form>
 
   <h2>List all Withdrawal </h2>
+  <div class="col-md-offset-2 col-md-8 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8 text-center">
   <div class="table-responsive">
-  <table class="table">
+  <table class="table-bordered" width="100%">
     <thead>
       <tr>
         <th>Date Withdrawal</th>
@@ -55,4 +58,5 @@
     </tbody>
   </table>
   </div>
+</div>
 </div>
