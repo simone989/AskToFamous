@@ -56,9 +56,6 @@ app.controller('chartsUserController',function($scope,$rootScope, $state, $http,
           for( date in res.data.data.map(question => question.date.split(" ")[0]).filter((elem,index,self ) => index == self.indexOf(elem)) ){
             $scope.data[0].push(res.data.data.map((question) => question.date.split(" ")[0]).filter((dateFilter) => dateFilter ==  res.data.data.map(question => question.date.split(" ")[0]).filter((elem,index,self ) => index == self.indexOf(elem))[date] ).length)
           }
-
-
-
         }
         else
           Notification.error(res.data.message);
@@ -69,9 +66,36 @@ app.controller('chartsUserController',function($scope,$rootScope, $state, $http,
     );
 
 
+    $http({
+      method: 'POST',
+      url: path + "getChartDataUserTag",
+      data: $.param({ name: $scope.nameCreator}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          $scope.series2 = ['Tag'];
+          $scope.labels2 = res.data.data.filter((elem,index,self ) => index == self.indexOf(elem))
+          $scope.data2 = [ [] ]
+          for(tag in res.data.data.filter((elem,index,self ) => index == self.indexOf(elem))){
+            var count = 0;
+            for (tagOld in  res.data.data){
+              if (res.data.data[tagOld] == res.data.data.filter((elem,index,self ) => index == self.indexOf(elem))[tag]){
+                count++;
+              }
+            }
+            $scope.data2[0].push(count)
+          }
 
-
-    //$scope.labels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
 
   })
 })

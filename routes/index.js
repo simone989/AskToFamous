@@ -1458,6 +1458,43 @@ router.post('/getChartDataUser',function(req,res,next){
   })
 });
 
+router.post('/getChartDataUserTag',function(req,res,next){
+  if( !req.body.name )
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res,next){
+  Question.find({"creator": req.body.name},function(err,Questions){
+    if(err)
+      throw(err);
+      //console.log(Questions)
+      arraySend= []
+      Questions.map((question) => question.tag.map((tag) => arraySend.push(tag.replace("#",""))))
+      res.json({
+        success: true,
+        message: "ok",
+        data: arraySend
+      });
+
+  })
+});
+
 
 
 
