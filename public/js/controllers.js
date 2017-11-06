@@ -38,15 +38,41 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
 
 });
 
-app.controller('chartsUserController',function($scope,$rootScope, $state, $http, $localStorage, Notification){
+app.controller('chartsUserController',function($scope,$rootScope, $state, $http, $stateParams, $localStorage, Notification){
   $(function(){
-    $scope.labels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-    $scope.series = ['Series A', 'Series B'];
+    $scope.nameCreator = $stateParams.nameCreator
+    $http({
+      method: 'POST',
+      url: path + "getChartDataUser",
+      data: $.param({ name: $scope.nameCreator}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          $scope.series = ['Question'];
+          $scope.labels = res.data.data.map(question => question.date.split(" ")[0]).filter((elem,index,self ) => index == self.indexOf(elem))
+          $scope.data = [ [] ]
+          for( date in res.data.data.map(question => question.date.split(" ")[0]).filter((elem,index,self ) => index == self.indexOf(elem)) ){
+            $scope.data[0].push(res.data.data.map((question) => question.date.split(" ")[0]).filter((dateFilter) => dateFilter ==  res.data.data.map(question => question.date.split(" ")[0]).filter((elem,index,self ) => index == self.indexOf(elem))[date] ).length)
+          }
 
-    $scope.data = [
-      [65, 59, 80, 81, 56, 55, 40],
-      [28, 48, 40, 19, 86, 27, 90]
-    ];
+
+
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
+
+
+
+    //$scope.labels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
+
   })
 })
 
