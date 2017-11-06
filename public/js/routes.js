@@ -86,4 +86,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
           nameCreator: ""
         }
       })
+      .state('chartsTag',{
+        url: '/chartsTag',
+        templateUrl: '/partials/chartsTag.html',
+        controller: 'chartsTagController',
+        params: {
+          tag: ""
+        }
+      })
 });

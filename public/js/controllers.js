@@ -38,6 +38,12 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
 
 });
 
+app.controller('chartsTagController',function($scope, $rootScope, $state, $http, $stateParams , $localStorage){
+  $(function(){
+    $scope.tag = $stateParams.tag
+  })
+})
+
 app.controller('chartsUserController',function($scope,$rootScope, $state, $http, $stateParams, $localStorage, Notification){
   $(function(){
     $scope.nameCreator = $stateParams.nameCreator
@@ -747,8 +753,12 @@ app.controller('allQuestionController',function($scope, $rootScope, $state, $htt
 
 
   $scope.changePage = function(thisObje){
-    console.log(this)
     $state.go('questionPage',{name: thisObje.question.creatorData.name, image: thisObje.question.creatorData.image, platform: thisObje.question.creatorData.platform })
+  }
+
+  $scope.changePageChartTag = function(thisObje){
+    console.log(this.tagDB)
+    $state.go('chartsTag',{tag: thisObje.tagDB })
   }
 });
 

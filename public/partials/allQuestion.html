@@ -12,7 +12,9 @@
           </div>
             <span>Tag: </span>
             <div class= "tagDiv" style="display: inline-block">
-              <span  ng-repeat= "tagDB in question.tag">#{{tagDB}}  </span>
+              <span  ng-repeat= "tagDB in question.tag">
+                <a style= "cursor: pointer" ng-click="changePageChartTag(this)"> #{{tagDB}} </a> 
+              </span>
               <span><button  class="btn btn-lg btn-primary"  ng-click="openComment(this)" ng-show="(question.commentFlag == true && (user != '' && user != null && user.token != ''))" >Comment<i class="fa fa-comment" /></button></span>
             </div>
           <div id="{{question._id}}DIV" hidden= true>
