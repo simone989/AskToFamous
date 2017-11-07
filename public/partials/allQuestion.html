@@ -1,35 +1,49 @@
-<div class="container-fluid" ng-init="creator=[]">
+<div class="container" ng-init="creator=[]">
   <div class="row">
-    <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8 text-center">
-        <h2>List All Question: </h2>
-        <div class="Question" ng-repeat="question in allQuestion">
-          <span class="form-signin-heading" style="font-size: 250%">{{ question.title }} to <a ng-click="changePage(this)">{{ question.creator}}</a></span>
-          <span style="text-align: right">{{ question.author }}: {{ question.date }}</span>
-          <textarea class="form-control" cols="50" rows="8" readonly>{{ question.text }}</textarea>
-          <div ng-show="(question.reply != 'None')">
-            <span>Reply Creator</span>
-            <textarea class="form-control" cols="50" rows="4" readonly>{{ question.reply }}</textarea>
-          </div>
-            <span>Tag: </span>
-            <div class= "tagDiv" style="display: inline-block">
-              <span  ng-repeat= "tagDB in question.tag">
-                <a style= "cursor: pointer" ng-click="changePageChartTag(this)"> #{{tagDB}} </a> 
-              </span>
-              <span><button  class="btn btn-lg btn-primary"  ng-click="openComment(this)" ng-show="(question.commentFlag == true && (user != '' && user != null && user.token != ''))" >Comment<i class="fa fa-comment" /></button></span>
+    <div class="col-xs-12 text-center">
+        <h1>List All Question</h1>
+        <br>
+        <div class="row">
+          <div class="Question col-xs-6"  ng-repeat="question in allQuestion">
+            <div style="border: 3px solid #EDEDED; padding: 8px">
+            <div class="row">
+              <div class="col-xs-12 col-sm-6">
+                <span class="form-signin-heading pull-left" style="font-size: 200%; display: inline-block !important">{{ question.title }} to <a ng-click="changePage(this)">{{ question.creator}}</a></span>
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                <span class="pull-right" style="display: inline-block !important">{{ question.author }}: {{ question.date }}</span>
+              </div>
             </div>
-          <div id="{{question._id}}DIV" hidden= true>
-            <div  ng-repeat="comment in allComment[question._id]">
-              <span>{{comment.author}} on {{ comment.date}}</span>
-              <textarea class="form-control" cols="50" rows="2" readonly>{{ comment.text }}</textarea>
-              <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) != -1)" ng-click="sendUnLike(this)"><i class= "fa fa-heart">&nbsp{{ comment.like.length}}</i></span>
-              <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) == -1)" ng-click="sendLike(this)"><i class= "fa fa-heart-o">&nbsp{{ comment.like.length}}</i></span>
+            <textarea class="form-control" cols="50" rows="8" readonly>{{ question.text }}</textarea>
+            <br>
+            <div ng-show="(question.reply != 'None')">
+              <span style="font-size: 200%;">Reply Creator</span>
+              <textarea class="form-control" cols="50" rows="4" readonly>{{ question.reply }}</textarea>
+            <div>
+              <span style="font-size: 150%">Tag: </span>
+              <div class= "tagDiv" style="display: inline-block; font-size: 150%">
+                <span  ng-repeat= "tagDB in question.tag">
+                  <a style= "cursor: pointer" ng-click="changePageChartTag(this)"> #{{tagDB}} </a>
+                </span>
+                <span><button  class="btn btn-lg btn-primary"  ng-click="openComment(this)" ng-show="(question.commentFlag == true && (user != '' && user != null && user.token != ''))" >Comment<i class="fa fa-comment" /></button></span>
+              </div>
+            <div id="{{question._id}}DIV" hidden= true>
+              <div  ng-repeat="comment in allComment[question._id]">
+                <span>{{comment.author}} on {{ comment.date}}</span>
+                <textarea class="form-control" cols="50" rows="2" readonly>{{ comment.text }}</textarea>
+                <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) != -1)" ng-click="sendUnLike(this)"><i class= "fa fa-heart">&nbsp{{ comment.like.length}}</i></span>
+                <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) == -1)" ng-click="sendLike(this)"><i class= "fa fa-heart-o">&nbsp{{ comment.like.length}}</i></span>
+              </div>
+              <form class="form-signin" ng-submit="replyComment(this, commentModel)" >
+                <textarea ng-model="commentModel" class="form-control" placeholder="Add your comment" cols="50" rows="2" maxlength="260" required/>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Add Comment</button>
+              </form>
             </div>
-            <form class="form-signin" ng-submit="replyComment(this, commentModel)" >
-              <textarea ng-model="commentModel" class="form-control" placeholder="Add your comment" cols="50" rows="2" maxlength="260" required/>
-              <button class="btn btn-lg btn-primary btn-block" type="submit">Add Comment</button>
-            </form>
-          </div>
-        </diV>
-    </div>
+          </diV>
+        </div>
+      </div>
+    <br>
+  </div> <!-- end ng repeat -->
+
   </div>
 </div>
