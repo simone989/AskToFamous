@@ -38,9 +38,38 @@ app.controller('homeController', function ($scope, $rootScope,$http, $localStora
 
 });
 
-app.controller('chartsTagController',function($scope, $rootScope, $state, $http, $stateParams , $localStorage){
+app.controller('chartsTagController',function($scope, $rootScope, $state, $http, $stateParams, $localStorage){
   $(function(){
     $scope.tag = $stateParams.tag
+    console.log($scope.tag)
+    $http({
+      method: 'POST',
+      url: path + "getChartDataUserTag",
+      data: $.param({ tag: $scope.tag}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          if (res.data.data != []){
+            $scope.series = ["Tag used"]
+            //$scope.labels = res.data.data.map(question => question.date.split(" ")[0]).filter((elem,index,self ) => index == self.indexOf(elem))
+
+            $scope.labels = res.data.data
+            $scope.data = [ res.data.data.map(() => 1) ]
+          } else{
+            $scope.series = ["Question"]
+            $scope.labels = ["test"]
+            $scope.data= [ [] ]
+          }
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
   })
 })
 
@@ -757,7 +786,6 @@ app.controller('allQuestionController',function($scope, $rootScope, $state, $htt
   }
 
   $scope.changePageChartTag = function(thisObje){
-    console.log(this.tagDB)
     $state.go('chartsTag',{tag: thisObje.tagDB })
   }
 });
@@ -778,10 +806,8 @@ app.controller('createQuestionController',function($scope, $rootScope, $statePar
       return
     }
 
-
-
     for( tag in $scope.tagsInput.tags){
-      $scope.hashtagSend.push($scope.tagsInput.tags[tag].value)
+      $scope.hashtagSend.push($scope.tagsInput.tags[tag].value.replace("#",""))
     }
 
     if ($scope.hashtagSend.length == 0){
