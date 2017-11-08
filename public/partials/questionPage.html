@@ -17,7 +17,7 @@
         <h2>List All Question: </h2>
         <div class="row">
         <div class="Question col-xs-6" ng-repeat="question in allQuestion">
-          <div style="border: 3px solid #EDEDED; padding: 8px">
+          <div style="border: 3px solid #EDEDED; padding: 8px; margin: 2px">
           <div class="row">
             <div class="col-xs-12 col-sm-6">
               <span class="form-signin-heading pull-left" style="font-size: 200%; display: inline-block !important">{{ question.title }} to <a ng-click="changePage(this)">{{ question.creator}}</a></span>
@@ -39,13 +39,14 @@
               <button class="btn btn-lg btn-primary btn-block" type="submit">Reply To Question</button>
             </form>
           </div>
+          </div>
           <br>
           <div>
             <div class="row">
               <div class="col-xs-12 col-sm-6">
                 <span style="font-size: 150%">Tag: </span>
                 <span  ng-repeat= "tagDB in question.tag">
-                  <a style= "cursor: pointer" ng-click="changePageChartTag(this)"><span style="font-size: 150%">{{tagDB}}</span> </a>
+                  <a style= "cursor: pointer" ng-click="changePageChartTag(this)"> <span style="font-size: 150%">#{{tagDB}}</span> </a>
                 </span>
               </div>
               <div class="col-xs-12 col-sm-6">
