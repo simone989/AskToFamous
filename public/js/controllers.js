@@ -192,7 +192,6 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
       $scope.valueBalanceChange = $scope.valueBalance
       return
     }
-    console.log(valueWithdraw)
     $scope.valueBalanceChange = $scope.valueBalance - valueWithdraw
   }
 
@@ -210,7 +209,7 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
     }).then(
       function(res) {
         if (res.data.success) {
-          Notification.success(res.data.message)
+          Notification.success("Withdraw success!!")
           $state.reload()
 
         }
@@ -221,6 +220,31 @@ app.controller('balanceController',function($scope,$rootScope,$state, $http, $lo
         Notification.error("Error!");
       }
     );
+
+    $http({
+      method: 'POST',
+      url: path + "getListBalance",
+      data: $.param({ token: $rootScope.user.token, name: $rootScope.user.name}),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).then(
+      function(res) {
+        if (res.data.success) {
+          //Notification.success(res.data.message)
+          $scope.balances= res.data.balance
+          $scope.valueBalance = 0
+          for (balance in res.data.balance){
+            $scope.valueBalance+= res.data.balance[balance].value
+          }
+          $scope.valueBalanceChange = $scope.valueBalance
+        }
+        else
+          Notification.error(res.data.message);
+      },
+      function(err) {
+        Notification.error("Error!");
+      }
+    );
+
   }
 })
 
