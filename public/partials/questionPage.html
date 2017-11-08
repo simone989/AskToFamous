@@ -39,7 +39,7 @@
               <button class="btn btn-lg btn-primary btn-block" type="submit">Reply To Question</button>
             </form>
           </div>
-          </div>
+
           <br>
           <div>
             <div class="row">
@@ -56,16 +56,23 @@
           </div>
             <div id="{{question._id}}DIV" hidden= true>
               <div  ng-repeat="comment in allComment[question._id]">
-                <span>{{comment.author}} on {{ comment.date}}</span>
                 <textarea class="form-control" cols="50" rows="2" readonly>{{ comment.text }}</textarea>
-                <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) != -1)" ng-click="sendUnLike(this)"><i class= "fa fa-heart text-danger">&nbsp{{ comment.like.length}}</i></span>
-                <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) == -1)" ng-click="sendLike(this)"><i class= "fa fa-heart-o">&nbsp{{ comment.like.length}}</i></span>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-6">
+                    <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) != -1)" ng-click="sendUnLike(this)"><i class= "fa fa-heart text-danger">&nbsp{{ comment.like.length}}</i></span>
+                    <span style= "cursor: pointer" ng-show="(comment.like.indexOf(user.name) == -1)" ng-click="sendLike(this)"><i class= "fa fa-heart-o">&nbsp{{ comment.like.length}}</i></span>
+                  </div>
+                  <div class="col-xs-12 col-sm-6">
+                    <span>{{comment.author}} on {{ comment.date}}</span>
+                  </div>
+                </div>
               </div>
               <form class="form-signin" ng-submit="replyComment(this, commentModel)" >
                 <textarea ng-model="commentModel" class="form-control" placeholder="Add your comment" cols="50" rows="2" maxlength="260" required/>
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Add Comment</button>
               </form>
             </div>
+          </div>
           </div>
         </div>
       </div>

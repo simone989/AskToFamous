@@ -64,12 +64,15 @@
           <ul class="nav navbar-nav navbar-right">
             <li>
               <div style="top: 7px" class="dropdown" ng-show="(user != '' && user != null && user.token != '')">
-                  <button class="btn dropdown-toggle btn-success" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  <button ng-show="(numberNotify != 0)" class="btn dropdown-toggle btn-success" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                       {{ numberNotify }} Notify <i class="fa fa-bell"></i>
-                      <span class="caret"></span>
+                  </button>
+
+                  <button ng-show="(numberNotify == 0)" class="btn dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      {{ numberNotify }} Notify <i class="fa fa-bell"></i>
                   </button>
                   <ul class="dropdown-menu"  ng-show="(allNotify != [])" aria-labelledby="dropdownMenu1">
-                      <li ng-repeat="notify in allNotify"><a ng-click="goToPage(this)">{{ notify.textNotify }}&ensp; <a href="#!"ng-click="removeNotify(this)"> <i class="glyphicon glyphicon-remove-circle"></i></a> </a></li>
+                      <li ng-repeat="notify in allNotify"><a ng-click="goToPage(this)">{{ notify.textNotify }}</a></li>
                   <ul>
               </div>
             </li>

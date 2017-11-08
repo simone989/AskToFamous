@@ -82,10 +82,11 @@ app.run(function($rootScope, $localStorage, $window, $state, Notification, $http
     console.log(thisObje)
     if (thisObje.notify.idUserMitt != "None" && thisObje.notify.idUserMitt != "Balance"){
       $state.go('singleQuestionPage', {idQuestion: thisObje.notify.idUserMitt}, {reload: true})
-      //$rootScope.removeNotify(thisObje)
+      $rootScope.removeNotify(thisObje)
     }
     else if((thisObje.notify.idUserMitt == "Balance")){
       $state.go('balance') //DA METETRE SU BALANCE
+      $rootScope.removeNotify(thisObje)
     }
   }
 
