@@ -44,7 +44,7 @@ app.controller('chartsTagController',function($scope, $rootScope, $state, $http,
     console.log($scope.tag)
     $http({
       method: 'POST',
-      url: path + "getChartDataUserTag",
+      url: path + "getChartDataTag",
       data: $.param({ tag: $scope.tag}),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }).then(

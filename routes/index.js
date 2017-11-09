@@ -579,7 +579,7 @@ router.post('/sendQuestion',function(req,res,next){
 
     var notify = new Notify({
       idUser: req.decoded.userId,
-      textNotify: "Your have new question!",
+      textNotify: "You have new question!",
       date: new Date().toLocaleString(),
       look: false,
       idUserMitt: question._id
@@ -1458,7 +1458,7 @@ router.post('/getChartDataUser',function(req,res,next){
   })
 });
 
-router.post('/getChartDataUserTag',function(req,res,next){
+router.post('/getChartDataTag',function(req,res,next){
   if( !req.body.tag)
     res.json({
       success: false,
@@ -1468,6 +1468,44 @@ router.post('/getChartDataUserTag',function(req,res,next){
     next();
 },function(req,res,next){
   Question.find({"tag": {"$in": [req.body.tag]}},function(err,Questions){
+    if(err)
+      throw(err);
+      arraySend = []
+      Questions.map((question) => question.tag.map((tag) => arraySend.push(tag.replace("#",""))))
+      res.json({
+        success: true,
+        message: "ok",
+        data: arraySend
+      });
+
+  })
+});
+
+
+
+router.post('/getChartDataUserTag',function(req,res,next){
+  if( !req.body.name)
+    res.json({
+      success: false,
+      message: "You've to fill all the fields."
+    });
+  else
+    next();
+},function(req,res,next){
+  User.find({"creator": true, "name":req.body.name },function(err,user){
+    if(err)
+      throw(err);
+    if(!user[0]){
+      res.json({
+        success: false,
+        message: "No Creator Found"
+      });
+    }else {
+      next();
+    }
+  })
+},function(req,res,next){
+  Question.find({"creator": req.body.name},function(err,Questions){
     if(err)
       throw(err);
       res.json({
