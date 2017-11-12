@@ -784,7 +784,7 @@ router.post('/getListBalance',function(req,res,next){
     }
   });
 },function(req,res,next){
-  Balance.find({"idUser": req['decoded']['_id'], "deleted": false},function(err,balance){
+  Balance.find({"idUser": req['decoded']['_id']},function(err,balance){
     if(err)
       throw(err);
       if(balance[0]){

@@ -35,7 +35,7 @@
 
           <div ng-show="(user.name == question.creator && question.reply == 'None')">
             <form class="form-signin" ng-submit="replyQuestion(this, replyModel)" >
-              <textarea ng-model="replyModel" class="form-control" placeholder="What do you want to ask?" cols="50" rows="4" maxlength="260"required/>
+              <textarea ng-model="replyModel" class="form-control" placeholder="Answer the question" cols="50" rows="4" maxlength="260"required/>
               <button class="btn btn-lg btn-primary btn-block" type="submit">Reply To Question</button>
             </form>
           </div>
